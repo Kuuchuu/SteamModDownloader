@@ -161,7 +161,7 @@ def configure(Repo_Owner, Repo_Name, prompt=None):
     conf.configureSetting(setting, value)
     start(Repo_Owner, Repo_Name)
 
-def start(Repo_Owner="Kuuchuu", Repo_Name="Steam-Workshop-Toolkit"):
+def start(Repo_Owner="Kuuchuu", Repo_Name="SteamModDownloader"):
     checkVersion(Repo_Owner, Repo_Name)
     checkConfig(Repo_Owner, Repo_Name)
     checkAndDownloadSteamCmd()

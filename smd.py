@@ -7,7 +7,7 @@ import sys
 option = sys.argv[1] if len(sys.argv) > 1 else None
 
 Repo_Owner = "Kuuchuu"
-Repo_Name = "Steam-Workshop-Toolkit"
+Repo_Name = "SteamModDownloader"
 
 # To-Do:
 # - Add support for password encryption
