@@ -3,8 +3,10 @@ import os
 import shutil
 import subprocess
 import sys
-
 option = sys.argv[1] if len(sys.argv) > 1 else None
+
+Repo_Owner = "Kuuchuu"
+Repo_Name = "Steam-Workshop-Toolkit"
 
 def install():
     # Check if files already exist
@@ -13,15 +15,13 @@ def install():
         return
 
     # Make venv (due to recent python changes)
-#    subprocess.run(["python3", "-m", "venv", ".clientEnv"])
     os.system("python3 -m venv .clientEnv")
 
     # Warning and continue prompt
     input("[WARN] This action will download SMD in your local directory.\n[PROMPT] (Press CTRL+C to quit, or ENTER to continue) ")
 
     # Clone SMD to current directory
-#    subprocess.run(["git", "clone", "https://github.com/Kuuchuu/Steam-Workshop-Toolkit.git"])
-    os.system("git clone https://github.com/Kuuchuu/Steam-Workshop-Toolkit.git")
+    os.system(f"git clone https://github.com/{Repo_Owner}/{Repo_Name}.git")
 
     # Move files to current directory and dispose of cloned folder
     move_and_clean()
@@ -29,7 +29,6 @@ def install():
     # Remove [.git] and install dependencies
     if os.path.exists(".git"):
         shutil.rmtree(".git")
-#    subprocess.run(["./.clientEnv/bin/pip", "install", "-r", "requirements.txt"])
     os.system("./.clientEnv/bin/pip install -r requirements.txt")
 
     # Success message
@@ -51,11 +50,9 @@ def reinstall():
             os.rmdir(os.path.join(root, name))
 
     # Clone SMD to current directory
-#    subprocess.run(["git", "clone", "https://github.com/Kuuchuu/Steam-Workshop-Toolkit.git"])
-    os.system("git clone https://github.com/Kuuchuu/Steam-Workshop-Toolkit.git")
+    os.system(f"git clone https://github.com/{Repo_Owner}/{Repo_Name}.git")
     
     # Make venv(due to recent python changes)
-#    subprocess.run(["python3", "-m", "venv", ".clientEnv"])
     os.system("python3 -m venv .clientEnv")
     
     # Move files to current directory and dispose of cloned folder
@@ -64,7 +61,6 @@ def reinstall():
     # Remove [.git] and install dependencies
     if os.path.exists(".git"):
         shutil.rmtree(".git")
-#    subprocess.run(["./.clientEnv/bin/pip", "install", "-r", "requirements.txt"])
     os.system("./.clientEnv/bin/pip install -r requirements.txt")
     
     # Success message
@@ -72,8 +68,7 @@ def reinstall():
 
 def update():
     # Create temporary folder for update
-#    subprocess.run(["git", "clone", "https://github.com/Kuuchuu/Steam-Workshop-Toolkit.git", "update/"])
-    os.system("git clone https://github.com/Kuuchuu/Steam-Workshop-Toolkit.git update/")
+    os.system(f"git clone https://github.com/{Repo_Owner}/{Repo_Name}.git update/")
 
     # Remove and update scripts, smd, and version.txt
     update_items = ["scripts", "smd", "version.txt"]
@@ -85,17 +80,13 @@ def update():
                 os.remove(item_path)
             else:
                 shutil.rmtree(item_path)
-#        if os.path.exists(item):
-#            subprocess.run(["rm", "-rf", item])
         update_path = os.path.join('update', item)
         if os.path.isfile(update_path):
             shutil.move(update_path, '.')
         else:
             shutil.move(update_path, item_path)
-#        subprocess.run(["mv", f"./update/{item}", "."])
 
     # Remove temporary folder
-#    subprocess.run(["rm", "-rf", "./update"])
     shutil.rmtree('./update')
 
     # Success message
@@ -104,19 +95,16 @@ def update():
 def launch():
     print("[PROCESS] Starting SMD.")
     # Run tool. (Assume python3 available)
-#    subprocess.run(["./.clientEnv/bin/python3", "__main__.py"])
     os.system("./.clientEnv/bin/python3 __main__.py")
 
 def move_and_clean():
-#    subprocess.run(["mv", "./SteamModDownloader/*", "."])
-#    subprocess.run(["rm", "-rf", "./SteamModDownloader"])
-    for item in os.listdir('./SteamModDownloader'):
-        s_path = os.path.join('./SteamModDownloader', item)
+    for item in os.listdir(f'./{Repo_Name}'):
+        s_path = os.path.join(f'./{Repo_Name}', item)
         d_path = os.path.join('.', item)
         if os.path.isdir(s_path) and os.path.exists(d_path):
             shutil.rmtree(d_path)
         shutil.move(s_path, '.')
-    shutil.rmtree('./SteamModDownloader')
+    shutil.rmtree(f'./{Repo_Name}')
 
 options = {
     "install": install,
