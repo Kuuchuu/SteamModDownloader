@@ -130,6 +130,7 @@ def move_and_clean():
                 new_smd = file.read()
             with open(__file__, 'w', encoding='utf-8') as file:
                 file.write(new_smd)
+            os.chmod(__file__, 0o755)
             os.remove(s_path)
         else:
             shutil.move(s_path, '.')
