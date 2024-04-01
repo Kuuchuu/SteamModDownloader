@@ -1,0 +1,64 @@
+name: Release Workflow
+
+on:
+  push:
+    paths:
+      - 'version.txt'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Read Version File
+        id: version
+        run: echo "::set-output name=VERSION::$(cat version.txt)"
+
+      - name: Prepare Artifacts
+        run: |
+          git archive --format=tar.gz --output source-code-${{ steps.version.outputs.VERSION }}.tar.gz HEAD
+          git archive --format=zip --output source-code-${{ steps.version.outputs.VERSION }}.zip HEAD
+          cp smd.py smd-${{ steps.version.outputs.VERSION }}.py
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.version.outputs.VERSION }}
+          release_name: Release ${{ steps.version.outputs.VERSION }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Source Code tar.gz
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./source-code-${{ steps.version.outputs.VERSION }}.tar.gz
+          asset_name: source-code-${{ steps.version.outputs.VERSION }}.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Source Code zip
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./source-code-${{ steps.version.outputs.VERSION }}.zip
+          asset_name: source-code-${{ steps.version.outputs.VERSION }}.zip
+          asset_content_type: application/zip
+
+      - name: Upload smd.py
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./smd-${{ steps.version.outputs.VERSION }}.py
+          asset_name: smd-${{ steps.version.outputs.VERSION }}.py
+          asset_content_type: text/plain
