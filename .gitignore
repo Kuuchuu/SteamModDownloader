@@ -135,7 +135,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-/Scripts/
+# /Scripts/
 /dlmods.sublime-project
 /dlmods.sublime-workspace
 /pyvenv.cfg
