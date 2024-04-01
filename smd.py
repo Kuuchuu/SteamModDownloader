@@ -45,9 +45,15 @@ def reinstall():
     print(f"[PROCESS] Deleting {fcount} files/folders.")
     for root, dirs, files in os.walk('.', topdown=False):
         for name in files:
-            os.remove(os.path.join(root, name))
+            file_path = os.path.join(root, name)
+            os.remove(file_path)
         for name in dirs:
-            os.rmdir(os.path.join(root, name))
+            dir_path = os.path.join(root, name)
+            try:
+                os.rmdir(dir_path)
+            except OSError:
+                # If os.rmdir fails due to symlink or non-empty directory, use shutil.rmtree
+                shutil.rmtree(dir_path, ignore_errors=True)
 
     # Clone SMD to current directory
     os.system(f"git clone https://github.com/{Repo_Owner}/{Repo_Name}.git")
