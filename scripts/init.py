@@ -31,19 +31,19 @@ def checkConfig():
         pass
 
     try:
-        if conf.fetchConfiguration('downloadDir') == [] or conf.fetchConfiguration('downloadDir') == "null":
+        if conf.fetchConfiguration('downloadDir') == []:
             raise confErr('Invalid downloadDir!')
-        elif not os.path.exists(conf.fetchConfiguration('downloadDir')):
+        if conf.fetchConfiguration('downloadDir') != "" and not os.path.exists(conf.fetchConfiguration('downloadDir')):
             raise confErr('downloadDir does not exist or is invalid!')
-        if conf.fetchConfiguration('anonymousMode').lower() not in ("true", "false"):
+        if conf.fetchConfiguration('anonymousMode') != "" and conf.fetchConfiguration('anonymousMode').lower() not in ("true", "false"):
             raise confErr('Invalid anonymous mode value!')
         pattern = r'^[a-zA-Z0-9_]{2,32}$'
-        if not re.match(pattern, conf.fetchConfiguration('steamAccountName')):
+        if conf.fetchConfiguration('steamAccountName') != "" and not re.match(pattern, conf.fetchConfiguration('steamAccountName')):
             raise confErr('Invalid steam account name!')
         pattern = r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{6,}$'
-        if not re.search(pattern, conf.fetchConfiguration('steamPassword')):
+        if conf.fetchConfiguration('steamPassword') != "" and not re.search(pattern, conf.fetchConfiguration('steamPassword')):
             raise confErr('Invalid steam password!')
-        if not conf.fetchConfiguration('gameID').isdigit():
+        if conf.fetchConfiguration('gameID') != "" and not conf.fetchConfiguration('gameID').isdigit():
             raise confErr('Invalid gameID!')
     except confErr as e:
         print(f'(ERROR) {e}\nPlease run `smd reinstall`, or manually fix conf.json.')

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+from pathlib import Path
 import shutil
 import subprocess
 import sys
@@ -34,6 +35,15 @@ def install():
     # Success message
     print("[SUCCESS] You can now launch SMD.")
 
+def clear_directory(directory):
+    for p in Path(directory).glob('*'):
+        if p.is_file() or p.is_symlink():
+            p.unlink()
+            print(f"Removed: {p}")
+        else:
+            shutil.rmtree(p, onerror=lambda func, path, exc_info: print(f"Error removing {path}"))
+            print(f"Removed directory: {p}")
+
 def reinstall():
     # Warning and continue prompt
     input("[WARN] This action will delete all files in this directory, and re-download SMD in your local directory.\n"
@@ -43,17 +53,18 @@ def reinstall():
     # Delete SMD files
     fcount = len([name for name in os.listdir('.') if os.path.isfile(name)]) - 1
     print(f"[PROCESS] Deleting {fcount} files/folders.")
-    for root, dirs, files in os.walk('.', topdown=False):
-        for name in files:
-            file_path = os.path.join(root, name)
-            os.remove(file_path)
-        for name in dirs:
-            dir_path = os.path.join(root, name)
-            try:
-                os.rmdir(dir_path)
-            except OSError:
-                # If os.rmdir fails due to symlink or non-empty directory, use shutil.rmtree
-                shutil.rmtree(dir_path, ignore_errors=True)
+    clear_directory('.')
+    # for root, dirs, files in os.walk('.', topdown=False):
+    #     for name in files:
+    #         file_path = os.path.join(root, name)
+    #         os.remove(file_path)
+    #     for name in dirs:
+    #         dir_path = os.path.join(root, name)
+    #         try:
+    #             os.rmdir(dir_path)
+    #         except OSError:
+    #             # If os.rmdir fails due to symlink or non-empty directory, use shutil.rmtree
+    #             shutil.rmtree(dir_path, ignore_errors=True)
 
     # Clone SMD to current directory
     os.system(f"git clone https://github.com/{Repo_Owner}/{Repo_Name}.git")
