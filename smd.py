@@ -125,7 +125,14 @@ def move_and_clean():
         d_path = os.path.join('.', item)
         if os.path.isdir(s_path) and os.path.exists(d_path):
             shutil.rmtree(d_path)
-        shutil.move(s_path, '.')
+        if os.path.isfile(s_path) and item == "smd.py":
+            with open(s_path, 'r', encoding='utf-8') as file:
+                new_smd = file.read()
+            with open(__file__, 'w', encoding='utf-8') as file:
+                file.write(new_smd)
+            os.remove(s_path)
+        else
+            shutil.move(s_path, '.')
     shutil.rmtree(f'./{Repo_Name}')
 
 if __name__ == '__main__':

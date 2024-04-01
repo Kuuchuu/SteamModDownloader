@@ -12,6 +12,7 @@ python3-env or virtualenv
 
 Download `smd.py` from releases tab, and run the following commands:
 ```bash
+chmod +x ./smd.py
 ./smd.py install # Execute script
 ```
 If you want to replace your already existing installation completely:
