@@ -20,7 +20,13 @@ def checkVersion():
         print("Listed Version: " + listedVersion)
         print("--------------------------------------------------")
 
-    
+def check_empty_list(config):
+    for key, value in config.items():
+        if isinstance(value, list) and not value:
+            print(f"Configuration for '{key}' is an empty list.")
+            return True
+    return False
+
 def checkConfig():
     # Make configuration file if missing
     if not os.path.exists('./conf.json'):
@@ -31,7 +37,7 @@ def checkConfig():
         pass
 
     try:
-        if conf.fetchConfiguration('downloadDir') == []:
+        if check_empty_list(conf.fetchConfiguration()):
             raise confErr('Invalid downloadDir!')
         if conf.fetchConfiguration('downloadDir') != "" and not os.path.exists(conf.fetchConfiguration('downloadDir')):
             raise confErr('downloadDir does not exist or is invalid!')

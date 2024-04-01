@@ -28,7 +28,7 @@ def getCredentials():
 
     return name, pass_
 
-def fetchConfiguration(val):
+def fetchConfiguration(val=None):
     with open("conf.json", "r") as f:
         js = json.load(f)
-    return js[val]
+    return js if val is None else js[val]
