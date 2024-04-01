@@ -30,9 +30,5 @@ def getCredentials():
 
 def fetchConfiguration(val):
     with open("conf.json", "r") as f:
-        try:
-            js = json.load(f)
-        except json.decoder.JSONDecodeError:
-            print('(ERROR) conf.json data malformed! Please run smd reinstall, or manually fix conf.json.')
-            return 1
+        js = json.load(f)
     return js[val]

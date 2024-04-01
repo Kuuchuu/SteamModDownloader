@@ -1,6 +1,7 @@
 from scripts.steamcmd import checkAndDownloadSteamCmd
 import os
 import json
+import re
 import scripts.config as conf
 import scripts.steam as steam
 from tkinter import Tk
@@ -25,6 +26,28 @@ def checkConfig():
     if not os.path.exists('./conf.json'):
         with open('conf.json', 'w') as f:
             f.write('{"downloadDir":"","anonymousMode":"","steamAccountName":"","steamPassword":"","gameID":""}')
+
+    class confErr(Exception):
+        pass
+
+    try:
+        if conf.fetchConfiguration('downloadDir') == [] or conf.fetchConfiguration('downloadDir') == "null":
+            raise confErr('Invalid downloadDir!')
+        elif not os.path.exists(conf.fetchConfiguration('downloadDir')):
+            raise confErr('downloadDir does not exist or is invalid!')
+        if conf.fetchConfiguration('anonymousMode').lower() not in ("true", "false"):
+            raise confErr('Invalid anonymous mode value!')
+        pattern = r'^[a-zA-Z0-9_]{2,32}$'
+        if not re.match(pattern, conf.fetchConfiguration('steamAccountName')):
+            raise confErr('Invalid steam account name!')
+        pattern = r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{6,}$'
+        if not re.search(pattern, conf.fetchConfiguration('steamPassword')):
+            raise confErr('Invalid steam password!')
+        if not conf.fetchConfiguration('gameID').isdigit():
+            raise confErr('Invalid gameID!')
+    except confErr as e:
+        print(f'(ERROR) {e}\nPlease run `smd reinstall`, or manually fix conf.json.')
+        exit()
 
     # Reconfigure download directory setting if invalid
     if not os.path.exists(conf.fetchConfiguration('downloadDir')):
