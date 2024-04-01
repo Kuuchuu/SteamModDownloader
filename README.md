@@ -22,7 +22,7 @@ If you want to replace your already existing installation completely:
 ## Usage
 To start SMD (assuming it has been installed properly), run this command:
 ```bash
-./smd.py launch
+./smd.py launch --optionalFlags
 ```
 Here's a list of all the settings and what they are:
 ```js
@@ -35,6 +35,23 @@ Here's a list of all the settings and what they are:
 These are configured at startup once, and can be changed in settings.
 To download your mods, simply select the "Download Mods" option and
 paste your workshop url/link. It will be downloaded to `downloadDir`.
+
+Optional launch Flags:
+```bash
+    -c/--config='{"downloadDir":"","anonymousMode":"","steamAccountName":"","steamPassword":"","gameID":""}'
+
+    -f/--configFile='/path/to/smd_config.json'
+
+    -g/--game=GAME_ID
+
+    -m/--mod='ID_NUMBER,ID_NUMBER' OR 'https://steam.../?id=...,https://steam.../?id=...'
+
+    -p/--pack='ID_NUMBER,ID_NUMBER' OR 'https://steam.../?id=...,https://steam.../?id=...'
+
+    -o/--outputDir='/path/to/modDL/output'
+
+    -h/--help
+```
 
 ## Features
 - Collection Support

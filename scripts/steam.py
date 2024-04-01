@@ -10,12 +10,11 @@ def processURL(url):
     return result
 
 def checkType(url):
-    if not "https" in url:
+    if "https" not in url:
         return None
     res=requests.get(url)
     doc=BeautifulSoup(res.text,"html.parser")
-    cItems = doc.find_all(class_="collectionItemDetails")
-    if cItems:
+    if cItems := doc.find_all(class_="collectionItemDetails"):
         return "collection"
     else:
         return "mod"
@@ -26,8 +25,8 @@ def downloadMod(url):
     res = requests.get(url)
     doc = BeautifulSoup(res.text, "html.parser")
     title = doc.head.title.text.split("::")[1]
-    id = processURL(url)
-    download(id, gameid, title, dwn)
+    _id = processURL(url)
+    download(_id, gameid, title, dwn)
 
 def downloadCollection(url):
     res = requests.get(url)

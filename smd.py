@@ -128,15 +128,30 @@ def move_and_clean():
         shutil.move(s_path, '.')
     shutil.rmtree(f'./{Repo_Name}')
 
-options = {
-    "install": install,
-    "reinstall": reinstall,
-    "update": update,
-    "launch": launch
-}
+if __name__ == '__main__':
+    options = {
+        "install": install,
+        "reinstall": reinstall,
+        "update": update,
+        "launch": launch
+    }
 
-if option in options:
-    options[option]()
-else:
-    print("[ERROR] Invalid option passed, exiting with code 1.")
-    sys.exit(1)
+    if option in options:
+        options[option]()
+    else:
+        print('''
+            [ERROR] Invalid option passed\n\n
+            Usage:\n
+                ./smd.py [install | reinstall | update | launch --optionalFlags]\n\n
+                Optional launch Flags:\n
+                -c/--config='{"downloadDir":"","anonymousMode":"","steamAccountName":"","steamPassword":"","gameID":""}'\n
+                -f/--configFile='/path/to/smd_config.json'\n
+                -g/--game=GAME_ID\n
+                -m/--mod='ID_NUMBER,ID_NUMBER' OR 'https://steam.../?id=...,https://steam.../?id=...'\n
+                -p/--pack='ID_NUMBER,ID_NUMBER' OR 'https://steam.../?id=...,https://steam.../?id=...'\n
+                -o/--outputDir='/path/to/modDL/output'\n
+                -h/--help\n\n
+            Exiting!
+        ''')
+
+        sys.exit(1)
