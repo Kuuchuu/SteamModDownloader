@@ -1,4 +1,5 @@
 import json
+import re
 from getpass import getpass
 
 def configureSetting(setting, val):
@@ -10,12 +11,14 @@ def configureSetting(setting, val):
         f.truncate()
 
 def getCredentials():
+    pattern = r'^[a-zA-Z0-9_]{2,32}$'
     name = input("What is your steam name?\n> ")
-    while not name:
+    while not name or not re.match(pattern, name):
         name = input("Please enter a valid steam name.\n> ")
 
+    pattern = r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{6,}$'
     pass_ = getpass("What is your steam password?\n> ")
-    while not pass_:
+    while not pass_ or not re.search(pattern, pass_):
         pass_ = getpass("Please enter a valid steam password.\n> ")
 
     confirm = getpass("Re-enter your password to confirm.\n> ")
