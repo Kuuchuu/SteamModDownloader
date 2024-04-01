@@ -16,8 +16,8 @@ def checkVersion(Repo_Owner, Repo_Name):
 
     if currentVersion != listedVersion:
         print("[WARNING] Please update SMD with smd update!")
-        print("Client Version: " + currentVersion)
-        print("Listed Version: " + listedVersion)
+        print(f"Client Version: {currentVersion}")
+        print(f"Listed Version: {listedVersion}")
         print("--------------------------------------------------")
 
 def check_empty_list(config):
@@ -126,7 +126,7 @@ def listMods():
     print("--------------------------------------------------")
 
 def configure(Repo_Owner, Repo_Name, prompt=None):
-    if prompt == None:
+    if prompt is None:
         print("(DISCLAIMER) Information isn't gathered, and is only stored locally.")
         print(
             'Setting List:\n'
