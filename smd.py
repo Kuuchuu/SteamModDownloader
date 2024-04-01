@@ -112,7 +112,7 @@ def update():
 def launch():
     print("[PROCESS] Starting SMD.")
     # Run tool. (Assume python3 available)
-    os.system("./.clientEnv/bin/python3 __main__.py")
+    os.system(f"./.clientEnv/bin/python3 __main__.py {Repo_Owner} {Repo_Name}")
 
 def move_and_clean():
     for item in os.listdir(f'./{Repo_Name}'):

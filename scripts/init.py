@@ -12,7 +12,7 @@ import requests
 
 def checkVersion():
     currentVersion = open('version.txt','r').readline()
-    listedVersion = requests.get("https://raw.githubusercontent.com/NBZion/SteamModDownloader/master/version.txt").text
+    listedVersion = requests.get(f"https://raw.githubusercontent.com/{Repo_Owner}/{Repo_Name}/master/version.txt").text
 
     if currentVersion != listedVersion:
         print("[WARNING] Please update SMD with smd update!")
@@ -111,7 +111,7 @@ def listMods():
             print(jsonData['name'])
     print("--------------------------------------------------")
 
-def configure():
+def configure(Repo_Owner, Repo_Name):
     print("(DISCLAIMER) Information isn't gathered, and is only stored locally.")
     print(
         'Setting List:\n'
@@ -144,10 +144,10 @@ def configure():
             print('(ERROR) Invalid setting id, exiting.')
             exit()
     conf.configureSetting(setting, value)
-    start()
+    start(Repo_Owner, Repo_Name)
 
-def start():
-    checkVersion()
+def start(Repo_Owner="Kuuchuu", Repo_Name="Steam-Workshop-Toolkit"):
+    checkVersion(Repo_Owner, Repo_Name)
     checkConfig()
     checkAndDownloadSteamCmd()
     while True:
@@ -160,7 +160,7 @@ def start():
         elif prompt == '2':
             listMods()
         elif prompt == '3':
-            configure()
+            configure(Repo_Owner, Repo_Name)
             break
         elif prompt == '4':
             exit()
