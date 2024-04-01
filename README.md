@@ -1,7 +1,7 @@
 # SteamModDownloader
 A Steam Workshop Downloader CLI-tool for linux,
 
-Developed by NBZion.
+Developed by NBZion.  
 Extended by Kuuchuu.
 
 ## Installation
@@ -11,9 +11,9 @@ python3
 python3-env or virtualenv
 ```
 
-Download `smd.py` from releases tab, and run the following commands:
+Then run the following commands:
 ```bash
-wget https://github.com/Kuuchuu/SteamModDownloader/releases/latest/download/smd.py -O smd.py
+wget https://github.com/Kuuchuu/SteamModDownloader/releases/latest/download/smd.py -O smd.py # Or manually download the latest `smd.py` from releases tab.
 chmod +x ./smd.py
 ./smd.py install # Execute script
 ```
