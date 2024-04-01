@@ -10,7 +10,7 @@ from sys import exit
 import requests
 
 
-def checkVersion():
+def checkVersion(Repo_Owner, Repo_Name):
     currentVersion = open('version.txt','r').readline()
     listedVersion = requests.get(f"https://raw.githubusercontent.com/{Repo_Owner}/{Repo_Name}/master/version.txt").text
 
