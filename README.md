@@ -2,6 +2,7 @@
 A Steam Workshop Downloader CLI-tool for linux,
 
 Developed by NBZion.
+Extended by Kuuchuu.
 
 ## Installation
 Make sure you have the following installed in your system
@@ -12,6 +13,7 @@ python3-env or virtualenv
 
 Download `smd.py` from releases tab, and run the following commands:
 ```bash
+wget https://github.com/Kuuchuu/SteamModDownloader/releases/latest/download/smd.py -O smd.py
 chmod +x ./smd.py
 ./smd.py install # Execute script
 ```
@@ -62,6 +64,7 @@ Optional launch Flags:
 
 ## Some Things To Note...
 - This project is currently only built for the linux python version.
+  - Windows support soon, Mac support eventually.
 - Some mods may not download in anonymous mode, if so please use steam account option in config.
 - My code is messy, so feel free to pull-request any changes!
 - This project is still being updated, it's just that I'm either busy or don't have a feature to add, so please suggest potential features or report bugs in the issues page.
