@@ -9,6 +9,11 @@ option = sys.argv[1] if len(sys.argv) > 1 else None
 Repo_Owner = "Kuuchuu"
 Repo_Name = "Steam-Workshop-Toolkit"
 
+# To-Do:
+# - Add support for password encryption
+#   - Support for passing password as argument
+#   - Support for using public key as password
+
 def install():
     # Check if files already exist
     if os.path.exists("scripts") and os.path.exists("__main__.py"):
