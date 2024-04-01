@@ -21,8 +21,8 @@ If you want to replace your already existing installation completely:
 
 ## Usage
 To start SMD (assuming it has been installed properly), run this command:
-```
-./smd launch
+```bash
+./smd.py launch
 ```
 Here's a list of all the settings and what they are:
 ```js
