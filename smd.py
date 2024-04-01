@@ -131,7 +131,7 @@ def move_and_clean():
             with open(__file__, 'w', encoding='utf-8') as file:
                 file.write(new_smd)
             os.remove(s_path)
-        else
+        else:
             shutil.move(s_path, '.')
     shutil.rmtree(f'./{Repo_Name}')
 
