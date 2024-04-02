@@ -161,8 +161,37 @@ def configure(Repo_Owner, Repo_Name, prompt=None):
     conf.configureSetting(setting, value)
     start(Repo_Owner, Repo_Name)
 
-def start(Repo_Owner="Kuuchuu", Repo_Name="SteamModDownloader"):
+def start(Repo_Owner="Kuuchuu", Repo_Name="SteamModDownloader", options):
     checkVersion(Repo_Owner, Repo_Name)
+
+    if options.get('config'):
+        config_data = options['config']
+        for key, value in config_data.items():
+            conf.configureSetting(key, value)
+            print(f"Configured {key} with value {value} from --config")
+
+    if options.get('configFile'):
+        config_file_path = options['configFile']
+        with open(config_file_path, 'r') as file:
+            config_data = json.load(file)
+        for key, value in config_data.items():
+            conf.configureSetting(key, value)
+            print(f"Configured {key} with value {value} from --configFile")
+
+    if options.get('game'):
+        game_value = options['game']
+        conf.configureSetting('gameID', game_value)
+        print(f"Configured gameID with value {game_value}")
+
+    if options.get('mod'):
+        print(f"Mod value: {options['mod']}")
+
+    if options.get('pack'):
+        print(f"Pack value: {options['pack']}")
+
+    if options.get('outputDir'):
+        print(f"Output directory: {options['outputDir']}")
+
     checkConfig(Repo_Owner, Repo_Name)
     checkAndDownloadSteamCmd()
     while True:
