@@ -23,7 +23,7 @@ jobs:
         run: |
           echo "smd.py SHA256 Checksum:" > smd.py.sha256
           sha256sum smd.py >> smd.py.sha256
-          CHECKSUM=$(cat smd.py.sha256)
+          CHECKSUM=$(cat smd.py.sha256 | tr -d '\n')
           echo "::set-output name=CHECKSUM::$CHECKSUM"
         # CHECKSUM=$(sha256sum smd.py | awk '{ print $1 }')
         
@@ -32,10 +32,10 @@ jobs:
         run: |
           LAST_TAG=${{ steps.last_release.outputs.TAG }}
           RELEASE_NOTES=$(git log $LAST_TAG..HEAD --pretty=format:"%h %s" --reverse)
-          RELEASE_NOTES="${RELEASE_NOTES}%0A%0A${{ steps.sha256_checksum.outputs.CHECKSUM }}"
           RELEASE_NOTES="${RELEASE_NOTES//'%'/'%25'}"
           RELEASE_NOTES="${RELEASE_NOTES//$'\n'/'%0A'}"
           RELEASE_NOTES="${RELEASE_NOTES//$'\r'/'%0D'}"
+          RELEASE_NOTES="${RELEASE_NOTES}%0A%0A${{ steps.sha256_checksum.outputs.CHECKSUM }}"
           echo "::set-output name=NOTES::$RELEASE_NOTES"
 
       - name: Read Version File
