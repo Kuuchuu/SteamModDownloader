@@ -9,7 +9,6 @@ from tkinter.filedialog import askdirectory
 from sys import exit
 import requests
 
-
 def checkVersion(Repo_Owner, Repo_Name):
     currentVersion = open('version.txt','r').readline()
     listedVersion = requests.get(f"https://raw.githubusercontent.com/{Repo_Owner}/{Repo_Name}/master/version.txt").text
@@ -162,6 +161,7 @@ def configure(Repo_Owner, Repo_Name, prompt=None):
     start(Repo_Owner, Repo_Name)
 
 def start(Repo_Owner="Kuuchuu", Repo_Name="SteamModDownloader", options):
+    prompt=None
     checkVersion(Repo_Owner, Repo_Name)
 
     if options.get('config'):
@@ -185,19 +185,28 @@ def start(Repo_Owner="Kuuchuu", Repo_Name="SteamModDownloader", options):
 
     if options.get('mod'):
         print(f"Mod value: {options['mod']}")
+        prompt = '1'
 
     if options.get('pack'):
         print(f"Pack value: {options['pack']}")
+        prompt = '1'
 
     if options.get('outputDir'):
-        print(f"Output directory: {options['outputDir']}")
+        outputDir_value = options['outputDir']
+        conf.configureSetting('outputDir', outputDir_value)
+        print(f"Configured outputDir with value {outputDir_value}")
+        
+    if options.get('list'):
+        print("list called...")
+        prompt = '2'
 
     checkConfig(Repo_Owner, Repo_Name)
     checkAndDownloadSteamCmd()
     while True:
         print('Welcome to SWD!')
         print('[1] => Download Mods\n[2] => List Mods\n[3] => Open Settings\n[4] => Exit')
-        prompt = input('> ')
+        if prompt is None:
+            prompt = input('> ')
         if prompt == '1':
             downloadMods()
             break

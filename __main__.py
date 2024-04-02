@@ -11,6 +11,7 @@ def main():
     parser.add_argument("-m", "--mod", help="Mod ID numbers or URLs.")
     parser.add_argument("-p", "--pack", help="Pack ID numbers or URLs.")
     parser.add_argument("-o", "--outputDir", help="Path to the mod download output directory.")
+    parser.add_argument('-l', '--list', action='store_true', help='List all currently downloaded mods.')
     
     args = parser.parse_args()
     start(args.Repo_Owner, args.Repo_Name, vars(args))

@@ -166,13 +166,9 @@ if __name__ == '__main__':
                         help='ID_NUMBER,ID_NUMBER or URLs. Example: \'ID_NUMBER,ID_NUMBER\' OR \'https://steam.../?id=...,https://steam.../?id=...\'')
     launch_parser.add_argument('-o', '--outputDir', type=str,
                         help='Path to the mod download output directory. Example: \'/path/to/modDL/output\'')
+    launch_parser.add_argument('-l', '--list', action='store_true',
+                        help='List all currently downloaded mods.')
     args = parser.parse_args()
-    print(args.config)
-    print(args.configFile)
-    print(args.game)
-    print(args.mod)
-    print(args.pack)
-    print(args.outputDir)
     
     if hasattr(args, 'func'):
         args.func(args)
