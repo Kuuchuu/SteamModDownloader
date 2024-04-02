@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import argparse
+import json
 import os
 from pathlib import Path
 import shutil
@@ -137,29 +139,51 @@ def move_and_clean():
     shutil.rmtree(f'./{Repo_Name}')
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="SMD Launch Flags")
+    parser.add_argument('-c', '--config', type=json.loads,
+                        help='Configuration in JSON format. Example: \'{"downloadDir":"","anonymousMode":"","steamAccountName":"","steamPassword":"","gameID":""}\'')
+    parser.add_argument('-f', '--configFile', type=str,
+                        help='Path to the configuration file. Example: \'/path/to/smd_config.json\'')
+    parser.add_argument('-g', '--game', type=str,
+                        help='Game\'s Steam ID. Example: 294100')
+    parser.add_argument('-m', '--mod', type=str,
+                        help='ID_NUMBER,ID_NUMBER or URLs. Example: \'ID_NUMBER,ID_NUMBER\' OR \'https://steam.../?id=...,https://steam.../?id=...\'')
+    parser.add_argument('-p', '--pack', type=str,
+                        help='ID_NUMBER,ID_NUMBER or URLs. Example: \'ID_NUMBER,ID_NUMBER\' OR \'https://steam.../?id=...,https://steam.../?id=...\'')
+    parser.add_argument('-o', '--outputDir', type=str,
+                        help='Path to the mod download output directory. Example: \'/path/to/modDL/output\'')
+    parser.add_argument('-h', '--help', action='help', #default=argparse.SUPPRESS,
+                        help='Show this help message and exit.')
+    args = parser.parse_args()
+    print(args.config)
+    print(args.configFile)
+    print(args.game)
+    print(args.mod)
+    print(args.pack)
+    print(args.outputDir)
+
     options = {
         "install": install,
         "reinstall": reinstall,
         "update": update,
         "launch": launch
     }
-
     if option in options:
         options[option]()
     else:
         print('''
-            [ERROR] Invalid option passed\n\n
-            Usage:\n
-                ./smd.py [install | reinstall | update | launch --optionalFlags]\n\n
-                Optional launch Flags:\n
-                -c/--config='{"downloadDir":"","anonymousMode":"","steamAccountName":"","steamPassword":"","gameID":""}'\n
-                -f/--configFile='/path/to/smd_config.json'\n
-                -g/--game=GAME_ID\n
-                -m/--mod='ID_NUMBER,ID_NUMBER' OR 'https://steam.../?id=...,https://steam.../?id=...'\n
-                -p/--pack='ID_NUMBER,ID_NUMBER' OR 'https://steam.../?id=...,https://steam.../?id=...'\n
-                -o/--outputDir='/path/to/modDL/output'\n
-                -h/--help\n\n
-            Exiting!
+[ERROR] Invalid option passed\n\n
+    Usage:\n
+        ./smd.py [install | reinstall | update | launch --optionalFlags]\n\n
+      Optional launch Flags:\n
+        -c/--config='{"downloadDir":"","anonymousMode":"","steamAccountName":"","steamPassword":"","gameID":""}'\n
+        -f/--configFile='/path/to/smd_config.json'\n
+        -g/--game=GAME_ID\n
+        -m/--mod='ID_NUMBER,ID_NUMBER' OR 'https://steam.../?id=...,https://steam.../?id=...'\n
+        -p/--pack='ID_NUMBER,ID_NUMBER' OR 'https://steam.../?id=...,https://steam.../?id=...'\n
+        -o/--outputDir='/path/to/modDL/output'\n
+        -h/--help\n\n
+Exiting!
         ''')
 
         sys.exit(1)
