@@ -6,7 +6,6 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
-option = sys.argv[1] if len(sys.argv) > 1 else None
 
 Repo_Owner = "Kuuchuu"
 Repo_Name = "SteamModDownloader"
@@ -16,7 +15,7 @@ Repo_Name = "SteamModDownloader"
 #   - Support for passing password as argument
 #   - Support for using public key as password
 
-def install():
+def install(args=None):
     # Check if files already exist
     if os.path.exists("scripts") and os.path.exists("__main__.py"):
         reinstall()
@@ -51,7 +50,7 @@ def clear_directory(directory):
             shutil.rmtree(p, onerror=lambda func, path, exc_info: print(f"Error removing {path}"))
             print(f"Removed directory: {p}")
 
-def reinstall():
+def reinstall(args=None):
     # Warning and continue prompt
     input("[WARN] This action will delete all files in this directory, and re-download SMD in your local directory.\n"
           "[WARN] Make sure there are no important files in this directory before continuing! (This will also destroy your configuration, save it.)\n"
@@ -90,7 +89,7 @@ def reinstall():
     # Success message
     print("[SUCCESS] You can now launch SMD.")
 
-def update():
+def update(args=None):
     # Create temporary folder for update
     os.system(f"git clone https://github.com/{Repo_Owner}/{Repo_Name}.git update/")
 
@@ -116,10 +115,10 @@ def update():
     # Success message
     print("[SUCCESS] Updated SMD.")
 
-def launch():
+def launch(args=None):
     print("[PROCESS] Starting SMD.")
     # Run tool. (Assume python3 available)
-    os.system(f"./.clientEnv/bin/python3 __main__.py {Repo_Owner} {Repo_Name}")
+    os.system(f"./.clientEnv/bin/python3 __main__.py {Repo_Owner} {Repo_Name} {args}")
 
 def move_and_clean():
     for item in os.listdir(f'./{Repo_Name}'):
@@ -139,7 +138,26 @@ def move_and_clean():
     shutil.rmtree(f'./{Repo_Name}')
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="SMD Launch Flags")
+    parser = argparse.ArgumentParser(description="SteamModDownloader - A Steam Workshop Downloader CLI-tool for linux")
+    
+    subparsers = parser.add_subparsers(help='commands', dest='command')
+
+    # Create the parser for the "install" command
+    install_parser = subparsers.add_parser('install', help='Install command')
+    install_parser.set_defaults(func=install)
+
+    # Create the parser for the "reinstall" command
+    reinstall_parser = subparsers.add_parser('reinstall', help='Reinstall command')
+    reinstall_parser.set_defaults(func=reinstall)
+
+    # Create the parser for the "update" command
+    update_parser = subparsers.add_parser('update', help='Update command')
+    update_parser.set_defaults(func=update)
+
+    # Create the parser for the "launch" command
+    launch_parser = subparsers.add_parser('launch', help='Launch command')
+    launch_parser.set_defaults(func=launch)
+    
     parser.add_argument('-c', '--config', type=json.loads,
                         help='Configuration in JSON format. Example: \'{"downloadDir":"","anonymousMode":"","steamAccountName":"","steamPassword":"","gameID":""}\'')
     parser.add_argument('-f', '--configFile', type=str,
@@ -159,29 +177,9 @@ if __name__ == '__main__':
     print(args.mod)
     print(args.pack)
     print(args.outputDir)
-
-    options = {
-        "install": install,
-        "reinstall": reinstall,
-        "update": update,
-        "launch": launch
-    }
-    if option in options:
-        options[option]()
+    
+    if hasattr(args, 'func'):
+        args.func(args)
     else:
-        print('''
-[ERROR] Invalid option passed\n\n
-    Usage:\n
-        ./smd.py [install | reinstall | update | launch --optionalFlags]\n\n
-      Optional launch Flags:\n
-        -c/--config='{"downloadDir":"","anonymousMode":"","steamAccountName":"","steamPassword":"","gameID":""}'\n
-        -f/--configFile='/path/to/smd_config.json'\n
-        -g/--game=GAME_ID\n
-        -m/--mod='ID_NUMBER,ID_NUMBER' OR 'https://steam.../?id=...,https://steam.../?id=...'\n
-        -p/--pack='ID_NUMBER,ID_NUMBER' OR 'https://steam.../?id=...,https://steam.../?id=...'\n
-        -o/--outputDir='/path/to/modDL/output'\n
-        -h/--help\n\n
-Exiting!
-        ''')
-
+        parser.print_help()
         sys.exit(1)
