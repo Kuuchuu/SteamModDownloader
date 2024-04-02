@@ -152,8 +152,6 @@ if __name__ == '__main__':
                         help='ID_NUMBER,ID_NUMBER or URLs. Example: \'ID_NUMBER,ID_NUMBER\' OR \'https://steam.../?id=...,https://steam.../?id=...\'')
     parser.add_argument('-o', '--outputDir', type=str,
                         help='Path to the mod download output directory. Example: \'/path/to/modDL/output\'')
-    parser.add_argument('-h', '--help', action='help', #default=argparse.SUPPRESS,
-                        help='Show this help message and exit.')
     args = parser.parse_args()
     print(args.config)
     print(args.configFile)
