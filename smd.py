@@ -142,33 +142,29 @@ if __name__ == '__main__':
     
     subparsers = parser.add_subparsers(help='commands', dest='command')
 
-    # Create the parser for the "install" command
-    install_parser = subparsers.add_parser('install', help='Install command')
+    install_parser = subparsers.add_parser('install', help='Install smd.')
     install_parser.set_defaults(func=install)
 
-    # Create the parser for the "reinstall" command
-    reinstall_parser = subparsers.add_parser('reinstall', help='Reinstall command')
+    reinstall_parser = subparsers.add_parser('reinstall', help='Reinstall smd.')
     reinstall_parser.set_defaults(func=reinstall)
 
-    # Create the parser for the "update" command
-    update_parser = subparsers.add_parser('update', help='Update command')
+    update_parser = subparsers.add_parser('update', help='Update smd.')
     update_parser.set_defaults(func=update)
 
-    # Create the parser for the "launch" command
-    launch_parser = subparsers.add_parser('launch', help='Launch command')
+    launch_parser = subparsers.add_parser('launch', help='Launch smd. Accepts optional arguments.')
     launch_parser.set_defaults(func=launch)
     
-    parser.add_argument('-c', '--config', type=json.loads,
+    install_parser.add_argument('-c', '--config', type=json.loads,
                         help='Configuration in JSON format. Example: \'{"downloadDir":"","anonymousMode":"","steamAccountName":"","steamPassword":"","gameID":""}\'')
-    parser.add_argument('-f', '--configFile', type=str,
+    install_parser.add_argument('-f', '--configFile', type=str,
                         help='Path to the configuration file. Example: \'/path/to/smd_config.json\'')
-    parser.add_argument('-g', '--game', type=str,
+    install_parser.add_argument('-g', '--game', type=str,
                         help='Game\'s Steam ID. Example: 294100')
-    parser.add_argument('-m', '--mod', type=str,
+    install_parser.add_argument('-m', '--mod', type=str,
                         help='ID_NUMBER,ID_NUMBER or URLs. Example: \'ID_NUMBER,ID_NUMBER\' OR \'https://steam.../?id=...,https://steam.../?id=...\'')
-    parser.add_argument('-p', '--pack', type=str,
+    install_parser.add_argument('-p', '--pack', type=str,
                         help='ID_NUMBER,ID_NUMBER or URLs. Example: \'ID_NUMBER,ID_NUMBER\' OR \'https://steam.../?id=...,https://steam.../?id=...\'')
-    parser.add_argument('-o', '--outputDir', type=str,
+    install_parser.add_argument('-o', '--outputDir', type=str,
                         help='Path to the mod download output directory. Example: \'/path/to/modDL/output\'')
     args = parser.parse_args()
     print(args.config)
