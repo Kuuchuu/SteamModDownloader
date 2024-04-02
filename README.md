@@ -54,6 +54,8 @@ Optional launch Flags:
 
     -o/--outputDir='/path/to/modDL/output'
 
+    -l/--list # List installed mods
+
     -h/--help
 ```
 
