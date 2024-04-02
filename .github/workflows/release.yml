@@ -21,7 +21,7 @@ jobs:
       - name: Generate SHA256 Checksum for smd.py
         id: sha256_checksum
         run: |
-          echo "smd.py SHA256 Checksum:" > smd.py.sha256
+          echo "SHA256 Checksum:" > smd.py.sha256
           sha256sum smd.py >> smd.py.sha256
           CHECKSUM=$(cat smd.py.sha256 | tr -d '\n')
           echo "::set-output name=CHECKSUM::$CHECKSUM"
