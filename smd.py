@@ -15,7 +15,17 @@ Repo_Name = "SteamModDownloader"
 #   - Support for passing password as argument
 #   - Support for using public key as password
 
-def install(args=None):
+def install(args):
+    """
+    Installs SteamModDownloader (SMD) in the current directory if not already installed.
+    If already installed, it reinstalls SMD.
+
+    Args:
+        args (argparse.Namespace): Command-line arguments passed to the function. NOT USED.
+
+    Returns:
+        None
+    """
     # Check if files already exist
     if os.path.exists("scripts") and os.path.exists("__main__.py"):
         reinstall()
@@ -42,6 +52,15 @@ def install(args=None):
     print("[SUCCESS] You can now launch SMD.")
 
 def clear_directory(directory):
+    """
+    Clears all files and subdirectories within the specified directory.
+
+    Args:
+        directory (str): The path to the directory to be cleared.
+
+    Returns:
+        None
+    """
     for p in Path(directory).glob('*'):
         if p.is_file() or p.is_symlink():
             p.unlink()
@@ -50,7 +69,16 @@ def clear_directory(directory):
             shutil.rmtree(p, onerror=lambda func, path, exc_info: print(f"Error removing {path}"))
             print(f"Removed directory: {p}")
 
-def reinstall(args=None):
+def reinstall(args):
+    """
+    Reinstalls SteamModDownloader (SMD) in the current directory by deleting existing files and re-downloading SMD.
+
+    Args:
+        args (argparse.Namespace): Command-line arguments passed to the function. NOT USED.
+
+    Returns:
+        None
+    """
     # Warning and continue prompt
     input("[WARN] This action will delete all files in this directory, and re-download SMD in your local directory.\n"
           "[WARN] Make sure there are no important files in this directory before continuing! (This will also destroy your configuration, save it.)\n"
@@ -60,17 +88,6 @@ def reinstall(args=None):
     fcount = len([name for name in os.listdir('.') if os.path.isfile(name)]) - 1
     print(f"[PROCESS] Deleting {fcount} files/folders.")
     clear_directory('.')
-    # for root, dirs, files in os.walk('.', topdown=False):
-    #     for name in files:
-    #         file_path = os.path.join(root, name)
-    #         os.remove(file_path)
-    #     for name in dirs:
-    #         dir_path = os.path.join(root, name)
-    #         try:
-    #             os.rmdir(dir_path)
-    #         except OSError:
-    #             # If os.rmdir fails due to symlink or non-empty directory, use shutil.rmtree
-    #             shutil.rmtree(dir_path, ignore_errors=True)
 
     # Clone SMD to current directory
     os.system(f"git clone https://github.com/{Repo_Owner}/{Repo_Name}.git")
@@ -89,7 +106,16 @@ def reinstall(args=None):
     # Success message
     print("[SUCCESS] You can now launch SMD.")
 
-def update(args=None):
+def update(args):
+    """
+    Updates SteamModDownloader (SMD) by cloning the latest version from the repository and replacing specific files.
+
+    Args:
+        args (argparse.Namespace): Command-line arguments passed to the function. NOT USED.
+
+    Returns:
+        None
+    """
     # Create temporary folder for update
     os.system(f"git clone https://github.com/{Repo_Owner}/{Repo_Name}.git update/")
 
@@ -115,12 +141,33 @@ def update(args=None):
     # Success message
     print("[SUCCESS] Updated SMD.")
 
-def launch(args=None):
+def launch(args):
+    """
+    Launches SteamModDownloader (SMD) tool with any provided command-line arguments.
+
+    Args:
+        args (argparse.Namespace): Command-line arguments to be passed to the SMD tool.
+
+    Returns:
+        None
+    """
     print("[PROCESS] Starting SMD.")
     # Run tool. (Assume python3 available)
-    os.system(f"./.clientEnv/bin/python3 __main__.py {Repo_Owner} {Repo_Name} {args}")
+    args_dict = {k: v for k, v in vars(args).items() if v is not None}
+    from __main__ import main as _main
+    _main(**args_dict)
+    #os.system(f"./.clientEnv/bin/python3 __main__.py {Repo_Owner} {Repo_Name} {args}")
 
 def move_and_clean():
+    """
+    Moves necessary files to the current directory and cleans up the cloned repository folder.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
     for item in os.listdir(f'./{Repo_Name}'):
         s_path = os.path.join(f'./{Repo_Name}', item)
         d_path = os.path.join('.', item)
