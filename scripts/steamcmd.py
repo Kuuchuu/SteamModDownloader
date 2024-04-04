@@ -72,11 +72,12 @@ def downloadCollectionSCMD(mods):
             modId = mod['id']
             scriptFile.write(f'workshop_download_item {gameId} {modId}\n')
         scriptFile.write('quit')
-    with open('download_script.txt', 'r') as scriptFile:
-        print(scriptFile.read())
+    dlScriptPath = os.path.abspath('download_script.txt')
+    # with open('download_script.txt', 'r') as scriptFile:
+    #     print(scriptFile.read())
     print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
     print('Running SteamCMD script...')
-    subprocess.run([f'{steamCmdPath}steamcmd.sh', '+runscript download_script.txt'])
+    subprocess.run([f'{steamCmdPath}steamcmd.sh', f'+runscript {dlScriptPath}'])
     print('\n--------------------------------------------------')
     print('Moving and Renaming Mods...')
     for mod in mods:

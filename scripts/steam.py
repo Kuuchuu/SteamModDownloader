@@ -1,5 +1,5 @@
 import requests
-import json
+# import json
 from bs4 import BeautifulSoup
 from scripts.steamcmd import download,downloadCollectionSCMD
 from scripts.config import fetchConfiguration
@@ -48,12 +48,12 @@ def downloadCollection(url):
         res = requests.get(mod_url)
         doc = BeautifulSoup(res.text, "html.parser")
         title = doc.head.title.text.split("::")[1].strip()
-        _id = processURL(url)
+        _id = processURL(mod_url)
         print(f'Queuing: {title}, {_id}')
         mods.append({
             'gameId': gameid,
             'id': _id,
             'name': title
         })
-    print(f'\n\nSending Mod Collection:\n{json.dumps(mods, indent=4)}')
+    # print(f'\n\nSending Mod Collection:\n{json.dumps(mods, indent=4)}')
     downloadCollectionSCMD(mods)
