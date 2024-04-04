@@ -13,8 +13,6 @@ import requests
 Original_Repo_Owner="NBZion"
 Original_Repo_Name="SteamModDownloader"
 
-nonInteractive=False
-
 def checkVersion(Repo_Owner, Repo_Name):
     currentVersion = open('version.txt','r').readline()
     listedVersion = requests.get(f"https://raw.githubusercontent.com/{Repo_Owner}/{Repo_Name}/master/version.txt").text
@@ -178,18 +176,19 @@ def start(Repo_Owner=Original_Repo_Owner, Repo_Name=Original_Repo_Name, options=
     # print(f'Repo Name: {Repo_Name}')
     # print(f'Options: {options}')
     prompt=None
+    nonInteractive=False
     checkVersion(Repo_Owner, Repo_Name)
 
     if options.get('config'):
         config_data = options['config']
+        #print(f'Config data: {config_data}')
         try:
-            json.loads(config_data)
-        except json.JSONDecodeError:
+            for key, value in config_data.items():
+                conf.configureSetting(key, value)
+                print(f"Configured {key} with value {value} from --config")
+        except KeyError:
             print(f'Config data {config_data} invalid!')
             exit()
-        for key, value in config_data.items():
-            conf.configureSetting(key, value)
-            print(f"Configured {key} with value {value} from --config")
 
     if options.get('configFile'):
         config_file_path = options['configFile']
@@ -236,8 +235,8 @@ def start(Repo_Owner=Original_Repo_Owner, Repo_Name=Original_Repo_Name, options=
         if prompt == '1':
             downloadMods()
             break
-            if nonInteractive:
-                exit()
+            # if nonInteractive:
+            #     exit()
         elif prompt == '2':
             listMods()
             if nonInteractive:
