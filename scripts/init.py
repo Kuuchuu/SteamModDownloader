@@ -116,7 +116,7 @@ def downloadMods():
             steam.downloadMod(workshopURL)
             break
         elif workshopURLType == "collection":
-            print('(PROCESS) Downloading collection...')
+            print('(PROCESS) Processing collection...')
             steam.downloadCollection(workshopURL)
             break
         else:

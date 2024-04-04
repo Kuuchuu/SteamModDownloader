@@ -1,4 +1,5 @@
 import requests
+from pprint import pprint
 from bs4 import BeautifulSoup
 from scripts.steamcmd import download,downloadCollectionSCMD
 from scripts.config import fetchConfiguration
@@ -48,9 +49,11 @@ def downloadCollection(url):
         doc = BeautifulSoup(res.text, "html.parser")
         title = doc.head.title.text.split("::")[1].strip()
         _id = processURL(url)
+        pprint(f'Queuing:\n{title}, {_id}')
         mods.append({
             'gameId': gameid,
             'id': _id,
             'name': title
         })
+    pprint(f'\n\nSending Mod Collection:\n{mods}')
     downloadCollectionSCMD(mods)
