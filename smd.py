@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 
+# Change following to fork's repo name/owner:
 Repo_Owner = "Kuuchuu"
 Repo_Name = "SteamModDownloader"
 
@@ -152,13 +153,12 @@ def launch(args):
         None
     """
     print("[PROCESS] Starting SMD.")
-    # Run tool. (Assume python3 available)
-    args_dict = {k: v for k, v in vars(args).items() if v is not None}
-    #from __main__ import main as _main
     from scripts.init import start
-    start(**args_dict)
-    #_main(**args_dict)
-    #os.system(f"./.clientEnv/bin/python3 __main__.py {Repo_Owner} {Repo_Name} {args}")
+    args_dict = {k: v for k, v in vars(args).items() if v is not None}
+    # print(f'smd.py | Repo Owner: {Repo_Owner}')
+    # print(f'smd.py | Repo Name: {Repo_Name}')
+    # print(f'smd.py | Options: {args_dict}')
+    start(Repo_Owner, Repo_Name, options=args_dict)
 
 def move_and_clean():
     """

@@ -9,6 +9,10 @@ from tkinter.filedialog import askdirectory
 from sys import exit
 import requests
 
+# Defaults to original repo if not provided to `start()` function. Shouldn't need changed, change values in smd.py instead.
+Original_Repo_Owner="NBZion"
+Original_Repo_Name="SteamModDownloader"
+
 def checkVersion(Repo_Owner, Repo_Name):
     currentVersion = open('version.txt','r').readline()
     listedVersion = requests.get(f"https://raw.githubusercontent.com/{Repo_Owner}/{Repo_Name}/master/version.txt").text
@@ -28,35 +32,40 @@ def check_empty_list(config):
     return False
 
 def verifyConf(Repo_Owner, Repo_Name, failCount={'emptyList':0, 'downloadDir':0, 'anonymousMode':0, 'steamAccountName':0, 'steamPassword':0, 'gameID':0}):
+    # class confErr(Exception, prompt):
+    #     pass
     class confErr(Exception):
-        pass
+        def __init__(self, message="", prompt=None):
+            super().__init__(message)
+            self.prompt = prompt
     try:
         if check_empty_list(conf.fetchConfiguration()):
             failCount['emptyList'] += 1
             raise confErr('conf.json data malformed!\nValue cleared')
         if conf.fetchConfiguration('downloadDir') != "" and not os.path.exists(conf.fetchConfiguration('downloadDir')):
             failCount['downloadDir'] += 1
-            raise confErr('downloadDir does not exist or is invalid!', 2)
+            raise confErr('downloadDir does not exist or is invalid!', prompt=2)
         if conf.fetchConfiguration('anonymousMode') != "" and conf.fetchConfiguration('anonymousMode').lower() not in ("true", "false"):
             failCount['anonymousMode'] += 1
-            raise confErr('Invalid anonymous mode value!', 3)
+            raise confErr('Invalid anonymous mode value!', prompt=3)
         pattern = r'^[a-zA-Z0-9_]{2,32}$'
         if conf.fetchConfiguration('steamAccountName') != "" and not re.match(pattern, conf.fetchConfiguration('steamAccountName')):
             failCount['steamAccountName'] += 1
-            raise confErr('Invalid steam account name!', 4)
+            raise confErr('Invalid steam account name!', prompt=4)
         pattern = r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{6,}$'
         if conf.fetchConfiguration('steamPassword') != "" and not re.search(pattern, conf.fetchConfiguration('steamPassword')):
             failCount['steamPassword'] += 1
-            raise confErr('Invalid steam password!', 5)
+            raise confErr('Invalid steam password!', prompt=5)
         if conf.fetchConfiguration('gameID') != "" and not conf.fetchConfiguration('gameID').isdigit():
             failCount['gameID'] += 1
-            raise confErr('Invalid gameID!', 1)
-    except confErr as e, p:
+            raise confErr('Invalid gameID!', prompt=1)
+    except confErr as e:
         if any(value > 3 for value in failCount.values()):
             print(f'(ERROR) {e}\nToo many failures!\nPlease run `smd reinstall`, or manually fix conf.json.')
             exit()
         print(f'(ERROR) {e}')
-        configure(Repo_Owner, Repo_Name, p):
+        if e.prompt is not None:
+            configure(Repo_Owner, Repo_Name, e.prompt)
         print('Continuing configuration check...')
         verifyConf(Repo_Owner, Repo_Name, failCount)
 
@@ -160,18 +169,31 @@ def configure(Repo_Owner, Repo_Name, prompt=None):
     conf.configureSetting(setting, value)
     start(Repo_Owner, Repo_Name)
 
-def start(Repo_Owner="Kuuchuu", Repo_Name="SteamModDownloader", options):
+def start(Repo_Owner=Original_Repo_Owner, Repo_Name=Original_Repo_Name, options=None):
+    if options is None:
+        options = {}
+    # print(f'Repo Owner: {Repo_Owner}')
+    # print(f'Repo Name: {Repo_Name}')
+    # print(f'Options: {options}')
     prompt=None
     checkVersion(Repo_Owner, Repo_Name)
 
     if options.get('config'):
         config_data = options['config']
+        try:
+            json.loads(config_data)
+        except json.JSONDecodeError:
+            print(f'Config data {config_data} invalid!')
+            exit()
         for key, value in config_data.items():
             conf.configureSetting(key, value)
             print(f"Configured {key} with value {value} from --config")
 
     if options.get('configFile'):
         config_file_path = options['configFile']
+        if not os.path.exists(config_file_path):
+            print(f'Config file {config_file_path} does not exist!')
+            exit()
         with open(config_file_path, 'r') as file:
             config_data = json.load(file)
         for key, value in config_data.items():
@@ -220,4 +242,4 @@ def start(Repo_Owner="Kuuchuu", Repo_Name="SteamModDownloader", options):
         else:
             print('(ERROR) Invalid option passed, exiting.')
             exit()
-start()
+#start()
