@@ -1,5 +1,4 @@
 import requests
-# import json
 from bs4 import BeautifulSoup
 from scripts.steamcmd import download,downloadCollectionSCMD
 from scripts.config import fetchConfiguration
@@ -29,13 +28,6 @@ def downloadMod(url):
     _id = processURL(url)
     download(_id, gameid, title, dwn)
 
-# def downloadCollection(url):
-#     res = requests.get(url)
-#     doc = BeautifulSoup(res.text,"html.parser")
-#     itemList = doc.find_all(class_="collectionItemDetails")
-#     for item in itemList:
-#         downloadMod(item.find("a", href=True)['href'])
-
 def downloadCollection(url):
     mods = []
     gameid = fetchConfiguration('gameID')
@@ -43,17 +35,17 @@ def downloadCollection(url):
     res = requests.get(url)
     doc = BeautifulSoup(res.text,"html.parser")
     itemList = doc.find_all(class_="collectionItemDetails")
-    for item in itemList:
+    for item in itemList: # To-Do: Rework to just use title and id/mod_url from item, instead of scraping additional page.
         mod_url = item.find("a", href=True)['href']
-        res = requests.get(mod_url)
-        doc = BeautifulSoup(res.text, "html.parser")
-        title = doc.head.title.text.split("::")[1].strip()
         _id = processURL(mod_url)
+        if title_div := item.find(class_="workshopItemTitle"):
+            title = title_div.text.strip()
+        else:
+            title = _id
         print(f'Queuing: {title}, {_id}')
         mods.append({
             'gameId': gameid,
             'id': _id,
             'name': title
         })
-    # print(f'\n\nSending Mod Collection:\n{json.dumps(mods, indent=4)}')
     downloadCollectionSCMD(mods, dwn)

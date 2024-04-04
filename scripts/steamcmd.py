@@ -5,6 +5,7 @@ import wget
 import subprocess
 import shutil
 import json
+import time
 
 # Variables
 steamCmdUrl="https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz"
@@ -44,14 +45,14 @@ def download(id,gameId,name,insDir):
             f'+force_install_dir {workDirectory}',
             f'+login {anonCheck()}',
             f'+workshop_download_item {gameId} {id}',
-            '+exit',
+            '+quit',
         ]
     )
     print('\n--------------------------------------------------')
     print(f'Moving and Renaming {name} ({id})')
-    modFol=conDir+gameId+'/'+id+'/'
+    modFol=conDir+gameId+f'/{id}/'
     outPathName = f'{insDir}/{name}'
-    if os.path.exists(outPathName): print('Updating File (Existing File)')
+    if os.path.exists(outPathName): print('Updating Existing Mod')
     # Prepare info.json for mod
     with open(os.path.join(modFol,'smbinfo.json'), 'w') as jsonFile:
         infoData= {
@@ -61,6 +62,8 @@ def download(id,gameId,name,insDir):
         json.dump(infoData,jsonFile,indent=4)
     shutil.copytree(modFol,outPathName,dirs_exist_ok=True)
     shutil.rmtree(modFol)
+    print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+    print('Mod Download Complete!')
 
 def downloadCollectionSCMD(mods,insDir):
     print('--------------------------------------------------')
@@ -74,17 +77,18 @@ def downloadCollectionSCMD(mods,insDir):
             scriptFile.write(f'workshop_download_item {gameId} {modId}\n')
         scriptFile.write('quit')
     dlScriptPath = os.path.abspath('download_script.txt')
-    # with open('download_script.txt', 'r') as scriptFile:
-    #     print(scriptFile.read())
     print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
     print('Running SteamCMD script...')
+    startTime = time.time()
     subprocess.run([f'{steamCmdPath}steamcmd.sh', f'+runscript {dlScriptPath}'])
+    print(f'Script Finished in {time.time()-startTime} seconds')
+    os.remove(dlScriptPath)
     print('\n--------------------------------------------------')
     print('Moving and Renaming Mods...')
     for mod in mods:
         modFol = f'{conDir}/{mod["gameId"]}/{mod["id"]}/'
         outPathName = f'{insDir}/{mod["name"]}'
-        if os.path.exists(outPathName): print('Updating File (Existing File)')
+        if os.path.exists(outPathName): print(f'Updating {mod["name"]} (Existing Mod)')
         # Prepare info.json for mod
         with open(os.path.join(modFol,'smbinfo.json'), 'w') as jsonFile:
             infoData= {
@@ -94,3 +98,5 @@ def downloadCollectionSCMD(mods,insDir):
             json.dump(infoData,jsonFile,indent=4)
         shutil.copytree(modFol,outPathName,dirs_exist_ok=True)
         shutil.rmtree(modFol)
+    print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+    print('Collection Download Complete!')
