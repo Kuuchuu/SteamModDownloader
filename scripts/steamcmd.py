@@ -62,11 +62,12 @@ def download(id,gameId,name,insDir):
     shutil.copytree(modFol,outPathName,dirs_exist_ok=True)
     shutil.rmtree(modFol)
 
-def downloadCollectionSCMD(mods):
+def downloadCollectionSCMD(mods,insDir):
     print('--------------------------------------------------')
     print('Downloading Collection...')
     with open('download_script.txt', 'w') as scriptFile:
         scriptFile.write(f'force_install_dir {workDirectory}\n')
+        scriptFile.write(f'login {anonCheck()}\n')
         for mod in mods:
             gameId = mod['gameId']
             modId = mod['id']

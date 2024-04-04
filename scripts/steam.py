@@ -56,4 +56,4 @@ def downloadCollection(url):
             'name': title
         })
     # print(f'\n\nSending Mod Collection:\n{json.dumps(mods, indent=4)}')
-    downloadCollectionSCMD(mods)
+    downloadCollectionSCMD(mods, dwn)
