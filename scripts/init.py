@@ -185,6 +185,8 @@ def start(Repo_Owner=Original_Repo_Owner, Repo_Name=Original_Repo_Name, options=
         try:
             for key, value in config_data.items():
                 conf.configureSetting(key, value)
+                if key == 'steamPassword':
+                    value = '********'
                 print(f"Configured {key} with value {value} from --config")
         except KeyError:
             print(f'Config data {config_data} invalid!')
