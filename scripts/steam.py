@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from scripts.steamcmd import download
+from scripts.steamcmd import download,downloadCollectionSCMD
 from scripts.config import fetchConfiguration
 
 def processURL(url):
@@ -28,10 +28,29 @@ def downloadMod(url):
     _id = processURL(url)
     download(_id, gameid, title, dwn)
 
+# def downloadCollection(url):
+#     res = requests.get(url)
+#     doc = BeautifulSoup(res.text,"html.parser")
+#     itemList = doc.find_all(class_="collectionItemDetails")
+#     for item in itemList:
+#         downloadMod(item.find("a", href=True)['href'])
+
 def downloadCollection(url):
+    mods = []
+    gameid = fetchConfiguration('gameID')
+    dwn = fetchConfiguration('downloadDir')
     res = requests.get(url)
     doc = BeautifulSoup(res.text,"html.parser")
     itemList = doc.find_all(class_="collectionItemDetails")
     for item in itemList:
-        downloadMod(item.find("a", href=True)['href'])
-
+        mod_url = item.find("a", href=True)['href']
+        res = requests.get(mod_url)
+        doc = BeautifulSoup(res.text, "html.parser")
+        title = doc.head.title.text.split("::")[1].strip()
+        _id = processURL(url)
+        mods.append({
+            'gameId': gameid,
+            'id': _id,
+            'name': title
+        })
+    downloadCollectionSCMD(mods)
