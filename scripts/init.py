@@ -198,9 +198,15 @@ def start(Repo_Owner=Original_Repo_Owner, Repo_Name=Original_Repo_Name, options=
             print(f'Config file {config_file_path} does not exist!')
             exit()
         with open(config_file_path, 'r') as file:
-            config_data = json.load(file)
+            try:
+                config_data = json.load(file)
+            except json.decoder.JSONDecodeError:
+                print(f'Config file {config_file_path} is not valid JSON!')
+                exit()
         for key, value in config_data.items():
             conf.configureSetting(key, value)
+            if key == 'steamPassword':
+                value = '********'
             print(f"Configured {key} with value {value} from --configFile")
 
     if options.get('game'):
