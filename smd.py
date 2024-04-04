@@ -155,7 +155,7 @@ def launch(args):
     # Run tool. (Assume python3 available)
     args_dict = {k: v for k, v in vars(args).items() if v is not None}
     #from __main__ import main as _main
-    from scripts.init import 
+    from scripts.init import start
     start(**args_dict)
     #_main(**args_dict)
     #os.system(f"./.clientEnv/bin/python3 __main__.py {Repo_Owner} {Repo_Name} {args}")
