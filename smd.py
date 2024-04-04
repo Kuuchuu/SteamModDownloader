@@ -123,7 +123,7 @@ def update(args):
     os.system(f"git clone https://github.com/{Repo_Owner}/{Repo_Name}.git update/")
 
     # Remove and update scripts, smd, and version.txt
-    update_items = ["scripts", "smd", "version.txt"]
+    update_items = ["scripts", "smd.py", "requirements.txt", "version.txt"]
     for item in update_items:
         print(f"[PROCESS] Updating {item}")
         item_path = os.path.join('.', item)
