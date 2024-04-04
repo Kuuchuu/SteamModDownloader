@@ -1,4 +1,5 @@
 import requests
+import json
 from bs4 import BeautifulSoup
 from scripts.steamcmd import download,downloadCollectionSCMD
 from scripts.config import fetchConfiguration
