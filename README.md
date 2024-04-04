@@ -64,7 +64,6 @@ Optional launch Flags:
  
 ## Currently Known Issues
 - Downloading a mod may not work until you delete the steamcmd folder and try to re-download it.
-- steamCMD currently prompts for Steam Guard key for every single mod in a collection if MFA is turned on 😬
 
 ## Some Things To Note...
 - This project is currently only built for the linux python version.
