@@ -13,6 +13,8 @@ import requests
 Original_Repo_Owner="NBZion"
 Original_Repo_Name="SteamModDownloader"
 
+nonInteractive=False
+
 def checkVersion(Repo_Owner, Repo_Name):
     currentVersion = open('version.txt','r').readline()
     listedVersion = requests.get(f"https://raw.githubusercontent.com/{Repo_Owner}/{Repo_Name}/master/version.txt").text
@@ -229,11 +231,17 @@ def start(Repo_Owner=Original_Repo_Owner, Repo_Name=Original_Repo_Name, options=
         print('[1] => Download Mods\n[2] => List Mods\n[3] => Open Settings\n[4] => Exit')
         if prompt is None:
             prompt = input('> ')
+        else:
+            nonInteractive = True
         if prompt == '1':
             downloadMods()
             break
+            if nonInteractive:
+                exit()
         elif prompt == '2':
             listMods()
+            if nonInteractive:
+                exit()
         elif prompt == '3':
             configure(Repo_Owner, Repo_Name)
             break
