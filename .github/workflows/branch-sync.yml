@@ -1,0 +1,45 @@
+name: Branch Sync
+
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - 'version.txt'
+
+jobs:
+  sync-branches:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Configure Git
+      run: |
+        git config --global user.email "github-action@github.com"
+        git config --global user.name "GitHub Action"
+    
+    - name: Merge dev into stable
+      run: |
+        git fetch origin
+        git checkout stable
+        git merge origin/dev --ff-only
+        git rm .github/workflows/branch-sync.yml
+        git commit -am "Version $(cat version.txt)"
+        git push origin stable
+    
+    - name: Merge dev into NBZion
+      run: |
+        git fetch origin
+        git checkout NBZion
+        git merge origin/dev --ff-only
+
+        git rm .github/workflows/branch-sync.yml
+        sed -i 's/Kuuchuu/NBZion/g' smd.py
+        sed -i 's#/Kuuchuu/#/NBZion/#g' README.md
+        
+        git commit -am "Version $(cat version.txt), Upstream Configurations"
+        git push origin NBZion
