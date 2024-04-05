@@ -8,7 +8,7 @@ import subprocess
 import sys
 
 # Change following to fork's repo name/owner:
-Repo_Owner = "Kuuchuu"
+Repo_Owner = "NBZion"
 Repo_Name = "SteamModDownloader"
 
 # To-Do:

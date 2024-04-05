@@ -14,7 +14,7 @@ python3-env or virtualenv
 
 Navigate to the directory you would like to unpack smd in then run the following commands:
 ```bash
-wget https://github.com/Kuuchuu/SteamModDownloader/releases/latest/download/smd.py -O smd.py # Or manually download the latest `smd.py` from releases tab.
+wget https://github.com/NBZion/SteamModDownloader/releases/latest/download/smd.py -O smd.py # Or manually download the latest `smd.py` from releases tab.
 chmod +x ./smd.py
 ./smd.py install # Execute script
 ```
