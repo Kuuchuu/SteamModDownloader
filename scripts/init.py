@@ -107,21 +107,43 @@ def checkConfig(Repo_Owner, Repo_Name):
         conf.configureSetting('steamAccountName', username)
         conf.configureSetting('steamPassword', password)
 
-def downloadMods():
-    while True:
-        workshopURL = input("Mod/Collection Workshop URL: ")
-        workshopURLType = steam.checkType(workshopURL)
-        if workshopURLType == "mod":
-            print('(PROCESS) Downloading mod...')
-            steam.downloadMod(workshopURL)
-            break
-        elif workshopURLType == "collection":
-            print('(PROCESS) Processing collection...')
-            steam.downloadCollection(workshopURL)
-            break
-        else:
-            print('(ERROR) Invalid URL, awaiting new.')
-    #print('--------------------------------------------------')
+
+        mods.extend(options['mod'].split(","))
+        for i, item in enumerate(mods):
+            if not item.startswith("https"):
+                mods[i] = f'https://steamcommunity.com/sharedfiles/filedetails/?id={item}'
+
+
+def downloadMods(mods=None):
+    modURLs = []
+    ColURLs = []
+    if mods is None:
+        mods = []
+        mods.extend(input("Comma Separated Mod/Collection Workshop URL/IDs: ").split(","))
+    for i, item in enumerate(mods):
+        urlAttempts = 0
+        while True:
+            if urlAttempts > 3:
+                print('(ERROR) Too many failures!')
+                return 1
+            if mods[i] == "":
+                break
+            if not mods[i].startswith("https"):
+                mods[i] = f'https://steamcommunity.com/sharedfiles/filedetails/?id={item}'
+            URLCheck = steam.checkType(mods[i])
+            if URLCheck == "mod":
+                modURLs.append(mods[i])
+                break
+            elif URLCheck == "collection":
+                ColURLs.append(mods[i])
+                break
+            else:
+                print(f'(ERROR) Invalid URL "{URLCheck}", awaiting new.\nLeave empty to skip.')
+                urlAttempts += 1
+                mods[i] = input("Mod/Collection Workshop URL/IDs: ").split(",")
+    modList = [{"mods": modURLs, "collections": ColURLs}]
+    print('(PROCESS) Processing Mod(s)...')
+    steam.downloadModList(modList)
 
 def listMods():
     print("--------------------------------------------------")
@@ -172,9 +194,7 @@ def configure(Repo_Owner, Repo_Name, prompt=None):
 def start(Repo_Owner=Original_Repo_Owner, Repo_Name=Original_Repo_Name, options=None):
     if options is None:
         options = {}
-    # print(f'Repo Owner: {Repo_Owner}')
-    # print(f'Repo Name: {Repo_Name}')
-    # print(f'Options: {options}')
+    mods = []
     prompt=None
     nonInteractive=False
     checkVersion(Repo_Owner, Repo_Name)
@@ -216,32 +236,42 @@ def start(Repo_Owner=Original_Repo_Owner, Repo_Name=Original_Repo_Name, options=
 
     if options.get('mod'):
         print(f"Mod value: {options['mod']}")
+        mods.extend(options['mod'].split(","))
+        for i, item in enumerate(mods):
+            if not item.startswith("https"):
+                mods[i] = f'https://steamcommunity.com/sharedfiles/filedetails/?id={item}'
+        if not options.get('pack'):
+            print(f'Requested Mods:\n{mods}')
         prompt = '1'
 
     if options.get('pack'):
         print(f"Pack value: {options['pack']}")
+        mods.extend(options['pack'].split(","))
+        for i, item in enumerate(mods):
+            if not item.startswith("https"):
+                mods[i] = f'https://steamcommunity.com/sharedfiles/filedetails/?id={item}'
+        print(f'Requested Mods:\n{mods}')
         prompt = '1'
 
     if options.get('outputDir'):
         outputDir_value = options['outputDir']
         conf.configureSetting('outputDir', outputDir_value)
         print(f"Configured outputDir with value {outputDir_value}")
-        
+
     if options.get('list'):
-        print("list called...")
         prompt = '2'
 
     checkConfig(Repo_Owner, Repo_Name)
     checkAndDownloadSteamCmd()
     while True:
-        print('Welcome to SWD!')
-        print('[1] => Download Mods\n[2] => List Mods\n[3] => Open Settings\n[4] => Exit')
         if prompt is None:
+            print('Welcome to SWD!')
+            print('[1] => Download Mods\n[2] => List Mods\n[3] => Open Settings\n[4] => Exit')
             prompt = input('> ')
         else:
             nonInteractive = True
         if prompt == '1':
-            downloadMods()
+            downloadMods(mods)
             break
             # if nonInteractive:
             #     exit()

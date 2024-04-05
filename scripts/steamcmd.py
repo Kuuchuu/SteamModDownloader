@@ -13,11 +13,13 @@ steamCmdPath="./scripts/steamcmd/"
 workDirectory = f'{os.getcwd()}/scripts/steamcmd/workshop'
 conDir = f'{workDirectory}/steamapps/workshop/content/'
 tarFile=None
+
 def anonCheck():
     if conf.fetchConfiguration("anonymousMode") == "false":
         return conf.fetchConfiguration("steamAccountName") + " " + conf.fetchConfiguration("steamPassword")
     else:
         return "anonymous"
+
 def checkAndDownloadSteamCmd():
     if not os.path.exists(steamCmdPath):
         os.mkdir(steamCmdPath)
@@ -36,6 +38,7 @@ def checkAndDownloadSteamCmd():
     )
     os.remove(f'{steamCmdPath}steamcmd_linux.tar.gz')
     os.mkdir('./scripts/steamcmd/workshop')
+
 def download(id,gameId,name,insDir):
     print(f'Downloading {name}(MODID: {id} GAMEID: {gameId})')
     print('--------------------------------------------------')
@@ -65,38 +68,38 @@ def download(id,gameId,name,insDir):
     print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
     print('Mod Download Complete!')
 
-def downloadCollectionSCMD(mods,insDir):
+def downloadModListSCMD(gameid, mods, insDir):
     print('--------------------------------------------------')
-    print('Downloading Collection...')
+    print('Downloading Mods...')
+    print(f'DEBUG: {mods}')
     with open('download_script.txt', 'w') as scriptFile:
         scriptFile.write(f'force_install_dir {workDirectory}\n')
         scriptFile.write(f'login {anonCheck()}\n')
-        for mod in mods:
-            gameId = mod['gameId']
+        for mod in mods[0]:
             modId = mod['id']
-            scriptFile.write(f'workshop_download_item {gameId} {modId}\n')
+            scriptFile.write(f'workshop_download_item {gameid} {modId}\n')
         scriptFile.write('quit')
     dlScriptPath = os.path.abspath('download_script.txt')
     print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-    print('Running SteamCMD script...')
+    print('Running SteamCMD against Mod List...')
     startTime = time.time()
     subprocess.run([f'{steamCmdPath}steamcmd.sh', f'+runscript {dlScriptPath}'])
-    print(f'Script Finished in {time.time()-startTime} seconds')
+    print(f'Downloads finished in {time.time()-startTime} seconds.')
     os.remove(dlScriptPath)
     print('\n--------------------------------------------------')
     print('Moving and Renaming Mods...')
-    for mod in mods:
-        modFol = f'{conDir}/{mod["gameId"]}/{mod["id"]}/'
+    for mod in mods[0]:
+        modFol = f'{conDir}/{gameid}/{mod["id"]}/'
         outPathName = f'{insDir}/{mod["name"]}'
         if os.path.exists(outPathName): print(f'Updating {mod["name"]} (Existing Mod)')
         # Prepare info.json for mod
         with open(os.path.join(modFol,'smbinfo.json'), 'w') as jsonFile:
             infoData= {
                 "name": mod["name"],
-                "gameID": mod["gameId"]
+                "gameID": gameid
             }
             json.dump(infoData,jsonFile,indent=4)
         shutil.copytree(modFol,outPathName,dirs_exist_ok=True)
         shutil.rmtree(modFol)
     print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-    print('Collection Download Complete!')
+    print('Mod Download(s) Complete!')
