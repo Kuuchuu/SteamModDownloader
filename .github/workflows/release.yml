@@ -2,6 +2,9 @@ name: Release Workflow
 
 on:
   push:
+    branches:
+      - dev
+      - master
     paths:
       - 'version.txt'
 
