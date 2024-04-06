@@ -1,3 +1,4 @@
+from cryptography.fernet import Fernet
 import json
 import re
 from getpass import getpass
@@ -30,6 +31,27 @@ def getCredentials():
         confirm = getpass("Re-enter your password to confirm.\n> ")
 
     return name, pass_
+
+def keyGeneration(key_location):
+    if not os.path.exists(os.path.join(key_location, 'smd.key')):
+        raise ValueError("Invalid key location!")
+    key = Fernet.generate_key()
+    with open(os.path.join(key_location, 'smd.key'), 'wb') as keyfile:
+        keyfile.write(key)
+    return os.path.join(key_location, 'smd.key')
+
+def encryptPassword(password, key_file):
+    with open(key_file, 'rb') as keyfile:
+        key = keyfile.read()
+    fernet = Fernet(key)
+    return fernet.encrypt(password.encode())
+
+def decryptPassword(encrypted_password, key_file):
+    # Load the key from the key file
+    with open(key_file, 'rb') as keyfile:
+        key = keyfile.read()
+    fernet = Fernet(key)
+    return fernet.decrypt(encrypted_password).decode()
 
 def fetchConfiguration(val=None):
     with open("conf.json", "r") as f:
