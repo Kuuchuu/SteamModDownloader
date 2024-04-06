@@ -13,8 +13,7 @@ Repo_Name = "SteamModDownloader"
 
 # To-Do:
 # - Add support for password encryption
-#   - Support for passing password as argument
-#   - Support for using public key as password
+# - Verbose & Silent modes
 
 def install(args):
     """

@@ -69,9 +69,9 @@ def download(id,gameId,name,insDir):
     print('Mod Download Complete!')
 
 def downloadModListSCMD(gameid, mods, insDir):
-    print('--------------------------------------------------')
-    print('Downloading Mods...')
-    print(f'DEBUG: {mods}')
+    #print('--------------------------------------------------')
+    #print('Downloading Mods...')
+    # print(f'DEBUG: {mods}')
     with open('download_script.txt', 'w') as scriptFile:
         scriptFile.write(f'force_install_dir {workDirectory}\n')
         scriptFile.write(f'login {anonCheck()}\n')
