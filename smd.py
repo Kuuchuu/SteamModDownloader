@@ -15,7 +15,6 @@ Repo_Name = "SteamModDownloader"
 # - Add support for password encryption
 #   - Support for passing password as argument
 #   - Support for using public key as password
-# - Rework branches -> stable, dev, NBZion (stable and NBZion auto update on version bump, NBZion Repo_Owner auto changes)
 # - Fix __main__.py
 
 def install(args):
