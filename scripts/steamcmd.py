@@ -15,10 +15,12 @@ conDir = f'{workDirectory}/steamapps/workshop/content/'
 tarFile=None
 
 def anonCheck():
-    if conf.fetchConfiguration("anonymousMode") == "false":
-        return conf.fetchConfiguration("steamAccountName") + " " + conf.fetchConfiguration("steamPassword")
-    else:
+    if conf.fetchConfiguration("anonymousMode") != "false":
         return "anonymous"
+    steamPassword = conf.fetchConfiguration("steamPassword")
+    if conf.fetchConfiguration("encryptionKey") is not None:
+        steamPassword = conf.decryptPassword(steamPassword, conf.fetchConfiguration("encryptionKey"))
+    return f'{conf.fetchConfiguration("steamAccountName")}  {steamPassword}'
 
 def checkAndDownloadSteamCmd():
     if not os.path.exists(steamCmdPath):
@@ -38,35 +40,6 @@ def checkAndDownloadSteamCmd():
     )
     os.remove(f'{steamCmdPath}steamcmd_linux.tar.gz')
     os.mkdir('./scripts/steamcmd/workshop')
-
-def download(id,gameId,name,insDir):
-    print(f'Downloading {name}(MODID: {id} GAMEID: {gameId})')
-    print('--------------------------------------------------')
-    subprocess.run(
-        [
-            f'{steamCmdPath}steamcmd.sh',
-            f'+force_install_dir {workDirectory}',
-            f'+login {anonCheck()}',
-            f'+workshop_download_item {gameId} {id}',
-            '+quit',
-        ]
-    )
-    print('\n--------------------------------------------------')
-    print(f'Moving and Renaming {name} ({id})')
-    modFol=conDir+gameId+f'/{id}/'
-    outPathName = f'{insDir}/{name}'
-    if os.path.exists(outPathName): print('Updating Existing Mod')
-    # Prepare info.json for mod
-    with open(os.path.join(modFol,'smbinfo.json'), 'w') as jsonFile:
-        infoData= {
-            "name": name,
-            "gameID": gameId
-        }
-        json.dump(infoData,jsonFile,indent=4)
-    shutil.copytree(modFol,outPathName,dirs_exist_ok=True)
-    shutil.rmtree(modFol)
-    print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-    print('Mod Download Complete!')
 
 def downloadModListSCMD(gameid, mods, insDir):
     #print('--------------------------------------------------')
