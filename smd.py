@@ -206,19 +206,39 @@ if __name__ == '__main__':
     launch_parser.set_defaults(func=launch)
     
     launch_parser.add_argument('-c', '--config', type=json.loads,
-                        help='Configuration in JSON format. Example: \'{"downloadDir":"","anonymousMode":"","steamAccountName":"","steamPassword":"","gameID":""}\'')
+                        help='Configuration in JSON format. Example: \'{"downloadDir":"","anonymousMode":"","steamAccountName":"","steamPassword":"","encrypted":"","gameID":""":""}\'')
     launch_parser.add_argument('-f', '--configFile', type=str,
                         help='Path to the configuration file. Example: \'/path/to/smd_config.json\'')
+    launch_parser.add_argument('-t', '--tempConfig', action='store_true',
+                        help='Passed configuration data will not be stored.')
     launch_parser.add_argument('-g', '--game', type=str,
                         help='Game\'s Steam ID. Example: 294100')
     launch_parser.add_argument('-m', '--mod', type=str,
                         help='ID_NUMBER,ID_NUMBER or URLs. Example: \'ID_NUMBER,ID_NUMBER\' OR \'https://steam.../?id=...,https://steam.../?id=...\'')
-    launch_parser.add_argument('-p', '--pack', type=str,
+    launch_parser.add_argument('-c', '--collection', type=str,
                         help='ID_NUMBER,ID_NUMBER or URLs. Example: \'ID_NUMBER,ID_NUMBER\' OR \'https://steam.../?id=...,https://steam.../?id=...\'')
     launch_parser.add_argument('-o', '--outputDir', type=str,
                         help='Path to the mod download output directory. Example: \'/path/to/modDL/output\'')
+    launch_parser.add_argument('-a', '--anonymousMode', action='store_true',
+                        help='Skip Steam authentication. NOTE: Some downloads may fail without authentication.')
+    launch_parser.add_argument('-u', '--steamUsername', type=str,
+                        help='Steam username.')
+    launch_parser.add_argument('-p', '--steamPassword', type=str,
+                        help='Steam Password. NOTE: Can first be encrypted by calling `smd.py launch` with the -n/--encryptPassword flag followed by the password.')
+    launch_parser.add_argument('-e', '--encrypted', action='store_true',
+                        help='Is password encrypted? Set this to have SMD prompt for the key file during operation.')
+    launch_parser.add_argument('-k', '--encryptionKey', type=str,
+                        help='Path to the password\'s key file. Example: \'/path/to/smd.key\''').
+    launch_parser.add_argument('-n', '--encryptPassword', type=str,
+                        help='Call `smd.py launch` with the -n/--encryptPassword flag followed by a plain text password. Prompts for key file save location and returns encrypted password.').
     launch_parser.add_argument('-l', '--list', action='store_true',
                         help='List all currently downloaded mods.')
+    launch_parser.add_argument('-v', '--verbose', action='store_true',
+                        help='Extra chatty output.')
+    launch_parser.add_argument('-m', '--minimal', action='store_true',
+                        help='Very basic output. Useful for non-interactive scripts.')
+    launch_parser.add_argument('-s', '--silent', action='store_true',
+                        help='What\'s it doing? When will it finish? Who knows...')
     args = parser.parse_args()
     
     if hasattr(args, 'func'):

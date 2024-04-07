@@ -42,19 +42,39 @@ paste your workshop url/link. It will be downloaded to `downloadDir`.
 
 Optional launch Flags:
 ```bash
-    -c/--config='{"downloadDir":"","anonymousMode":"","steamAccountName":"","steamPassword":"","gameID":""}'
+    -c/--config '{"downloadDir":"","anonymousMode":"","steamAccountName":"","steamPassword":"","encrypted":"","gameID":""":""}'
 
-    -f/--configFile='/path/to/smd_config.json'
+    -f/--configFile '/path/to/smd_config.json'
 
-    -g/--game=GAME_ID
+    -t/--tempConfig # Passed configuration data will not be stored. BOOLEAN, Defaults to True
 
-    -m/--mod='ID_NUMBER,https://steam.../?id=...,ID_NUMBER,https://steam.../?id=...'
+    -g/--game GAME_ID
 
-    -p/--pack='ID_NUMBER,ID_NUMBER' OR 'https://steam.../?id=...,https://steam.../?id=...' # Mod/Collection URLs/IDs can be mix-matched
+    -m/--mod 'ID_NUMBER,https://steam.../?id=...,ID_NUMBER,https://steam.../?id=...'
 
-    -o/--outputDir='/path/to/modDL/output'
+    -c/--collection 'ID_NUMBER,ID_NUMBER' OR 'https://steam.../?id=...,https://steam.../?id=...' # Mod/Collection URLs/IDs can be mix-matched
+
+    -o/--outputDir '/path/to/modDL/output'
+
+    -a/--anonymousMode # Skip Steam authentication. NOTE: Some downloads may fail without authentication. BOOLEAN, Defaults to True when passed
+
+    -u/--steamUsername 'Username'
+
+    -p/--steamPassword 'Plain text password' # NOTE: Can first be encrypted by calling `smd.py launch` with the -n/--encryptPassword flag followed by the password.
+
+    -e/--encrypted # Is password encrypted? Set this to have SMD prompt for the key file during operation. BOOLEAN, Defaults to True when passed
+
+    -k/--encryptionKey '/path/to/smd.key'
+
+    -n/--encryptPassword 'Plain text password' # Prompts for key file save location and returns encrypted password.
 
     -l/--list # List installed mods
+
+    -v/--verbose # Extra chatty output.
+
+    -m/--minimal # Very basic output. Useful for non-interactive scripts.
+
+    -s/--silent # What's it doing? When will it finish? Who knows...
 
     -h/--help
 ```

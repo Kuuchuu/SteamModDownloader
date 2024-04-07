@@ -18,7 +18,7 @@ def anonCheck():
     if conf.fetchConfiguration("anonymousMode").lower() != "false":
         return "anonymous"
     steamPassword = conf.fetchConfiguration("steamPassword")
-    if conf.fetchConfiguration("encryption").lower() != "false":
+    if str(conf.fetchConfiguration("encrypted")).lower() != "false":
         if encryptionKey is None:
             if encryptionKey := conf.fetchConfiguration("encryptionKey") or conf.keySelection():
                 steamPassword = conf.decryptPassword(steamPassword, encryptionKey)

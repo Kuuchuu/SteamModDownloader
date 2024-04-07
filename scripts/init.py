@@ -31,7 +31,7 @@ def check_empty_list(config):
             return True
     return False
 
-def verifyConf(failCount={'emptyList':0, 'downloadDir':0, 'anonymousMode':0, 'steamAccountName':0, 'steamPassword':0, 'encryption':0 'gameID':0}):
+def verifyConf(failCount={'emptyList':0, 'downloadDir':0, 'anonymousMode':0, 'steamAccountName':0, 'steamPassword':0, 'encrypted':0 'gameID':0}):
     class confErr(Exception):
         def __init__(self, message="", prompt=None):
             super().__init__(message)
@@ -54,9 +54,9 @@ def verifyConf(failCount={'emptyList':0, 'downloadDir':0, 'anonymousMode':0, 'st
         if conf.fetchConfiguration('steamPassword') != "" and not re.search(pattern, conf.fetchConfiguration('steamPassword')):
             failCount['steamPassword'] += 1
             raise confErr('Invalid steam password!', prompt=5)
-        if conf.fetchConfiguration('encryption') != "" and conf.fetchConfiguration('encryption').lower() not in ("true", "false"):
-            failCount['encryption'] += 1
-            raise confErr('Invalid encryption mode value!', prompt=5)
+        if conf.fetchConfiguration('encrypted') != "" and conf.fetchConfiguration('encrypted').lower() not in ("true", "false"):
+            failCount['encrypted'] += 1
+            raise confErr('Invalid encrypted mode value!', prompt=5)
         if conf.fetchConfiguration('gameID') != "" and not conf.fetchConfiguration('gameID').isdigit():
             failCount['gameID'] += 1
             raise confErr('Invalid gameID!', prompt=1)
@@ -74,7 +74,7 @@ def checkConfig():
     # Make configuration file if missing
     if not os.path.exists('./conf.json'):
         with open('conf.json', 'w') as f:
-            f.write('{"downloadDir":"","anonymousMode":"","steamAccountName":"","steamPassword":"","encryption":"","gameID":""}')
+            f.write('{"downloadDir":"","anonymousMode":"","steamAccountName":"","steamPassword":"","encrypted":"","gameID":""}')
 
     verifyConf()
 
@@ -100,10 +100,10 @@ def checkConfig():
 
     # Check if anonymous mode is off and ask for credentials
     if conf.fetchConfiguration("anonymousMode") == "false" and conf.fetchConfiguration("steamAccountName") == "":
-        username, password, encryption = conf.getCredentials()
+        username, password, encrypted = conf.getCredentials()
         conf.configureSetting('steamAccountName', username)
         conf.configureSetting('steamPassword', password)
-        conf.configureSetting('encryption', encryption)
+        conf.configureSetting('encrypted', encrypted)
 
 def downloadMods(mods=None):
     modURLs = []
@@ -170,8 +170,8 @@ def configure(prompt=None):
     elif prompt 4
         value = conf.getCredentials(True)
     elif prompt 5
-        value, encryption = conf.getCredentials(False)
-        conf.configureSetting('encryption', encryption)
+        value, encrypted = conf.getCredentials(False)
+        conf.configureSetting('encrypted', encrypted)
     else:
         value = input('> ')
     match prompt:
@@ -217,7 +217,7 @@ def start(_Repo_Owner=Original_Repo_Owner, _Repo_Name=Original_Repo_Name, option
     checkVersion(Repo_Owner, Repo_Name)
 
     if options.get('tempConfig'):
-        _CONFIG = {"downloadDir":"","anonymousMode":"","steamAccountName":"","steamPassword":"","encryption":"","gameID":""}
+        _CONFIG = {"downloadDir":"","anonymousMode":"","steamAccountName":"","steamPassword":"","encrypted":"","gameID":""}
         print('(INFO) Temporary config in use!')
 
     if options.get('config'):
@@ -270,10 +270,15 @@ def start(_Repo_Owner=Original_Repo_Owner, _Repo_Name=Original_Repo_Name, option
         conf.configureSetting('steamPassword', steamPassword_value)
         print(f"Configured steamPassword with value {steamPassword_value}")
 
+    if options.get('encrypted'):
+        encrypted_value = options['encrypted']
+        conf.configureSetting('encrypted', encrypted_value)
+        print(f"Configured encrypted with value {encrypted_value}")
+
     if options.get('encryptionKey'):
-        encryption_value = options['encryptionKey']
-        conf.configureSetting('encryptionKey', encryption_value)
-        print(f"Configured encryptionKey with value {encryption_value}")
+        encryptionKey_value = options['encryptionKey']
+        conf.configureSetting('encryptionKey', encryptionKey_value)
+        print(f"Configured encryptionKey with value {encryptionKey_value}")
 
     if options.get('game'):
         game_value = options['game']
@@ -286,13 +291,13 @@ def start(_Repo_Owner=Original_Repo_Owner, _Repo_Name=Original_Repo_Name, option
         for i, item in enumerate(mods):
             if not item.startswith("https"):
                 mods[i] = f'https://steamcommunity.com/sharedfiles/filedetails/?id={item}'
-        if not options.get('pack'):
+        if not options.get('collection'):
             print(f'Requested Mods:\n{mods}')
         prompt = '1'
 
-    if options.get('pack'):
-        print(f"Pack value: {options['pack']}")
-        mods.extend(options['pack'].split(","))
+    if options.get('collection'):
+        print(f"Collection value: {options['collection']}")
+        mods.extend(options['collection'].split(","))
         for i, item in enumerate(mods):
             if not item.startswith("https"):
                 mods[i] = f'https://steamcommunity.com/sharedfiles/filedetails/?id={item}'

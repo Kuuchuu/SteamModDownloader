@@ -42,9 +42,9 @@ def getYN(prompt, default=None):
 def getCredentials(skip=None):
     """
     Prompt the user for their steam credentials.
-        If skip is set to None, the default value, collect & return `username, password, encryption_status`.
+        If skip is set to None, the default value, collect & return `username, password, encrypted_status`.
         If skip is set to True, skip the password/encryption collection, return only `username`.
-        If skip is set to False, skip the username collection, return only `password, encryption_status`.
+        If skip is set to False, skip the username collection, return only `password, encrypted_status`.
     """
     def getName():
         pattern = r'^[a-zA-Z0-9_]{2,32}$'
