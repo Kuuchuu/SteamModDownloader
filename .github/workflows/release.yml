@@ -34,7 +34,7 @@ jobs:
         id: release_notes
         run: |
           LAST_TAG=${{ steps.last_release.outputs.TAG }}
-          RELEASE_NOTES=$(git log $LAST_TAG..HEAD --pretty=format:"%h %s" --reverse)
+          RELEASE_NOTES=$(git log $LAST_TAG..HEAD --pretty=format:"%h %s" --reverse | python -c "import sys; print(sys.stdin.read().replace('\\n', '\n'))")
           RELEASE_NOTES="${RELEASE_NOTES//'%'/'%25'}"
           RELEASE_NOTES="${RELEASE_NOTES//$'\n'/'%0A'}"
           RELEASE_NOTES="${RELEASE_NOTES//$'\r'/'%0D'}"
