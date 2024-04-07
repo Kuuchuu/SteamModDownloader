@@ -3,7 +3,7 @@ name: Release Workflow
 on:
   push:
     branches:
-      - dev
+      - stable
       - master
     paths:
       - 'version.txt'
@@ -15,6 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          ref: stable
           fetch-depth: 0
 
       - name: Get Last Release Tag
@@ -28,7 +29,6 @@ jobs:
           sha256sum smd.py >> smd.py.sha256
           CHECKSUM=$(cat smd.py.sha256 | tr -d '\n')
           echo "::set-output name=CHECKSUM::$CHECKSUM"
-        # CHECKSUM=$(sha256sum smd.py | awk '{ print $1 }')
         
       - name: Generate Release Notes
         id: release_notes
@@ -48,12 +48,6 @@ jobs:
       # - name: Prepare Artifacts
       #   run: cp smd.py smd-${{ steps.version.outputs.VERSION }}.py
 
-      # - name: Prepare Artifacts
-      #   run: |
-      #     git archive --format=tar.gz --output source-code-${{ steps.version.outputs.VERSION }}.tar.gz HEAD
-      #     git archive --format=zip --output source-code-${{ steps.version.outputs.VERSION }}.zip HEAD
-      #     cp smd.py smd-${{ steps.version.outputs.VERSION }}.py
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -65,26 +59,6 @@ jobs:
           body: ${{ steps.release_notes.outputs.NOTES }}
           draft: false
           prerelease: false
-
-      # - name: Upload Source Code tar.gz
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
-      #     asset_path: ./source-code-${{ steps.version.outputs.VERSION }}.tar.gz
-      #     asset_name: source-code-${{ steps.version.outputs.VERSION }}.tar.gz
-      #     asset_content_type: application/gzip
-
-      # - name: Upload Source Code zip
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
-      #     asset_path: ./source-code-${{ steps.version.outputs.VERSION }}.zip
-      #     asset_name: source-code-${{ steps.version.outputs.VERSION }}.zip
-      #     asset_content_type: application/zip
 
       - name: Remove To-Do Comments
         run: sed -i '/# To-Do:/,/# \/To-Do/d' smd.py
