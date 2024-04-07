@@ -34,25 +34,21 @@ jobs:
         id: release_notes
         run: |
           LAST_TAG=${{ steps.last_release.outputs.TAG }}
-          # Use Python to format commit messages
-          RELEASE_NOTES=$(git log $LAST_TAG..HEAD --pretty=format:"%H%n%BEND_OF_COMMIT" | python -c "
-import sys
+          RELEASE_NOTES=$(git log $LAST_TAG..HEAD --pretty=format:"%H%n%BEND_OF_COMMIT" | python -c |
+            import sys
 
-def format_commit(commit):
-    lines = commit.split('\n')
-    description_lines = lines[1:]  # Exclude the commit hash
-    if any(description_lines):
-        return '\n'.join(f'- {line}' for line in description_lines if line.strip() != '')
-    return ''
+            def format_commit(commit):
+                hash, *description_lines = commit.strip().split('\n')
+                if description_lines:
+                    bullet_points = '\\n'.join(f'- {line.strip()}' for line in description_lines if line.strip())
+                    return bullet_points
+                return ''
 
-commits = sys.stdin.read().strip().split('END_OF_COMMIT')
-formatted_commits = [format_commit(commit) for commit in commits if commit.strip() != '']
-formatted_notes = '\n'.join(formatted_commits)
-print(formatted_notes)
-")
-          RELEASE_NOTES="${RELEASE_NOTES//'%'/'%25'}"
-          RELEASE_NOTES="${RELEASE_NOTES//$'\n'/'%0A'}"
-          RELEASE_NOTES="${RELEASE_NOTES//$'\r'/'%0D'}"
+            commits = sys.stdin.read().strip().split('END_OF_COMMIT')
+            formatted_commits = filter(None, (format_commit(commit) for commit in commits))
+            formatted_notes = '\\n\\n'.join(formatted_commits)
+            print(formatted_notes.replace('%', '%25').replace('\\n', '%0A').replace('\\r', '%0D'))
+          )
           RELEASE_NOTES="${RELEASE_NOTES}%0A%0A${{ steps.sha256_checksum.outputs.CHECKSUM }}"
           echo "::set-output name=NOTES::$RELEASE_NOTES"
 
