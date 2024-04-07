@@ -7,19 +7,26 @@ import shutil
 import json
 import time
 
-# Variables
 steamCmdUrl="https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz"
 steamCmdPath="./scripts/steamcmd/"
 workDirectory = f'{os.getcwd()}/scripts/steamcmd/workshop'
 conDir = f'{workDirectory}/steamapps/workshop/content/'
 tarFile=None
+encryptionKey=None
 
 def anonCheck():
-    if conf.fetchConfiguration("anonymousMode") != "false":
+    if conf.fetchConfiguration("anonymousMode").lower() != "false":
         return "anonymous"
     steamPassword = conf.fetchConfiguration("steamPassword")
-    if conf.fetchConfiguration("encryptionKey") is not None:
-        steamPassword = conf.decryptPassword(steamPassword, conf.fetchConfiguration("encryptionKey"))
+    if conf.fetchConfiguration("encryption").lower() != "false":
+        if encryptionKey is None:
+            if encryptionKey := conf.fetchConfiguration("encryptionKey") or conf.keySelection():
+                steamPassword = conf.decryptPassword(steamPassword, encryptionKey)
+            else:
+                print("No encryption key selected.\nAttempting anonymous login...")
+                return "anonymous"
+        else:
+            steamPassword = conf.decryptPassword(steamPassword, encryptionKey)
     return f'{conf.fetchConfiguration("steamAccountName")}  {steamPassword}'
 
 def checkAndDownloadSteamCmd():

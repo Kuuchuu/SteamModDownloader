@@ -15,6 +15,8 @@ Repo_Name = "SteamModDownloader"
 # - Add support for password encryption
 # - Verbose & Silent modes
 # - If conf supplied via arg, require saveConf flag for passed conf to be written to conf.json, otherwise conf is not saved after session.
+# - Fancy output (Color INFO, WARN, ERROR)
+# /To-Do
 
 def install(args):
     """
