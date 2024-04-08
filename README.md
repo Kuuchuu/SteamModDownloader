@@ -38,7 +38,7 @@ Here's a list of all the settings and what they are:
 ```
 These are configured at startup once, and can be changed in settings.
 To download your mods, simply select the "Download Mods" option and
-paste your workshop url/link. It will be downloaded to `downloadDir`.
+paste your workshop URLs or IDs. They will be downloaded to `downloadDir`.
 
 Optional launch Flags:
 ```bash
@@ -83,7 +83,6 @@ Example:
 # DL Mods
 ./smd.py launch -c '{"downloadDir":"/tmp/dlDir","anonymousMode":"false,"steamAccountName":"kuuchuu","steamPassword":"⠏⠁⠎⠎⠺⠕⠗⠙","gameID":"001492"}' -g 294100 -p 'https://steamcommunity.com/sharedfiles/filedetails/?id=2457667915,2899200937' -m 'https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077,836308268,https://steamcommunity.com/sharedfiles/filedetails/?id=1874644848'
 # Notes:
-# - 'anonymousMode' boolean value should be lowercase
 # - Flags are applied in the same order as "Optional launch Flags" guide; In the example above the game ID "294100" would take precedence over the config's gameID value of "001492"
 
 # List Downloaded Mods
@@ -92,7 +91,9 @@ Example:
 
 ## Features
 - Collection Support
-  - Batch Collection Support
+- Mix and match mod URLs & IDs with Collection URLs & IDs, download them all at once.
+- Steam Password Encryption
+- Full Non-Interactive compatible CLI
  
 ## Currently Known Issues
 - Downloading a mod may not work until you delete the steamcmd folder and try to re-download it.
