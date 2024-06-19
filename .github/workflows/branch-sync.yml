@@ -40,6 +40,7 @@ jobs:
         sed -i 's/Kuuchuu/NBZion/g' smd.py
         sed -i '/# To-Do:/,/# \/To-Do/d' smd.py
         sed -i 's#/Kuuchuu/#/NBZion/#g' README.md
+        sed -i 's/Stable/Master/g' .github/workflows/release.yml
         
         git commit -am "Version $(cat version.txt), Upstream Configurations"
         git push origin NBZion
