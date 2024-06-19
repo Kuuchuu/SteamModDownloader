@@ -13,18 +13,6 @@ from pathlib import Path
 Repo_Owner = "Kuuchuu"
 Repo_Name = "SteamModDownloader"
 
-# To-Do:
-# - If conf supplied via arg, require saveConf flag for passed conf to be written to conf.json, otherwise conf is not saved after session.
-# - Add checksum verification for smd.py download
-# - Fix function & variable names (snake_case instead of camelCase). Bad habit, mbad
-# - Remove key location from conf.json, only allow passing through args
-# - Restructure code layout for packaging/distribution
-# - Fix whatever the heck I have going on with __main__.py (part of restructuring)
-# - Symlink SteamCMD files before each run
-# - Fix Rich Live output for SteamCMD process
-# - Docstring all functions
-# - standardize conf boolean cases ("anonymousMode": "false", "encrypted": "False")
-# /To-Do
 
 def install(args):
     """
