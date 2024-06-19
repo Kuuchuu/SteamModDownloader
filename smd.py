@@ -14,7 +14,6 @@ Repo_Owner = "Kuuchuu"
 Repo_Name = "SteamModDownloader"
 
 # To-Do:
-# - Verbose mode - rPrint functionality, only print "log" messages if verbose mode is enabled
 # - If conf supplied via arg, require saveConf flag for passed conf to be written to conf.json, otherwise conf is not saved after session.
 # - Add checksum verification for smd.py download
 # - Fix function & variable names (snake_case instead of camelCase). Bad habit, mbad

@@ -41,7 +41,9 @@ def rPrint(message=None, type=None, customStyle=None, tableData=None):
                 console.print(message, style=customStyle)
             return
         case 'log':
-            console.log(f"{str(datetime.datetime.now())} | {message}", style=customStyle)
+            global _VERBOSE
+            if _VERBOSE:
+                console.log(f"{str(datetime.datetime.now())} | {message}", style=customStyle)
             return
         case 'error':
             message = f'❌  {str(message)}'
@@ -86,7 +88,8 @@ def checkVersion():
         clResponse = requests.get(clURL)
         clData = clResponse.json()
         changelog = clData.get("body", "No description available.")
-        rPrint("Please update SMD with smd update!", None, "bold yellow")
+        rPrint("Please update SMD with smd update!", "warn")
+        #rPrint("Please update SMD with smd update!", None, "bold yellow")
         rPrint(f"Current Version: {currentVersion}")
         rPrint(f"New Version: {listedVersion}", "pop")
         rPrint({"title":"Changelog","message":changelog}, "panel")
@@ -296,7 +299,6 @@ def start(_Repo_Owner=Original_Repo_Owner, _Repo_Name=Original_Repo_Name, option
     if options.get('verbose'):
         global _VERBOSE
         _VERBOSE = True
-        rPrint('Verbose mode enabled but currently not implemented!', 'warn')
     if options.get('minimal'):
         global _MINIMAL
         _MINIMAL = True
