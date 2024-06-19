@@ -1,33 +1,33 @@
 import requests
 from bs4 import BeautifulSoup
-from scripts.steamcmd import downloadModListSCMD
-from scripts.config import fetchConfiguration
+from scripts.config import fetch_configuration
+from scripts.steamcmd import download_mod_list_scmd
 
-def processURL(url):
+def process_url(url):
     result = url.split('id=')[1]
     if 'searchtext' in url:
         result = result.split('&searchtext')[0]
     return result
 
-def checkType(url):
+def check_type(url):
     if "https" not in url:
         return None
     res=requests.get(url)
     doc=BeautifulSoup(res.text,"html.parser")
-    if cItems := doc.find_all(class_="collectionItemDetails"):
+    if c_items := doc.find_all(class_="collectionItemDetails"):
         return "collection"
     else:
         return "mod"
 
-def processMod(url, Collection=False):
+def process_mod(url, collection=False):
     mods = []
     res = requests.get(url)
     doc = BeautifulSoup(res.text, "html.parser")
-    if Collection:
-        itemList = doc.find_all(class_="collectionItemDetails")
-        for item in itemList:
+    if collection:
+        item_list = doc.find_all(class_="collectionItemDetails")
+        for item in item_list:
             mod_url = item.find("a", href=True)['href']
-            _id = processURL(mod_url)
+            _id = process_url(mod_url)
             if title_div := item.find(class_="workshopItemTitle"):
                 title = title_div.text.strip()
             else:
@@ -39,7 +39,7 @@ def processMod(url, Collection=False):
             })
     else:
         title = doc.head.title.text.split("::")[1]
-        _id = processURL(url)
+        _id = process_url(url)
         print(f'Queuing: {title}, {_id}')
         mods.append({
             'name': title,
@@ -47,19 +47,17 @@ def processMod(url, Collection=False):
         })
     return mods
 
-def downloadModList(modList=None):
+def download_mod_list(mod_list=None):
     mods = []
-    gameid = fetchConfiguration('gameID')
-    dwn = fetchConfiguration('downloadDir')
-    if modList is None:
+    gameid = fetch_configuration('gameID')
+    dwn = fetch_configuration('downloadDir')
+    if mod_list is None:
         print('(ERROR) No mods provided!')
         return 1
-    for mod_dict in modList:
+    for mod_dict in mod_list:
         collections_urls = mod_dict["collections"]
-        modURLs = mod_dict["mods"]
-        mods.extend(processMod(url, True) for url in collections_urls)
-        for url in modURLs:
-            mods.append(processMod(url))
-    downloadModListSCMD(gameid, mods, dwn)
-    
-    # To-Do: Remove duplicates
+        mod_urls = mod_dict["mods"]
+        mods.extend(process_mod(url, True) for url in collections_urls)
+        for url in mod_urls:
+            mods.append(process_mod(url))
+    download_mod_list_scmd(gameid, mods, dwn)

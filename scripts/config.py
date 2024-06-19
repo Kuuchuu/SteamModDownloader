@@ -8,9 +8,9 @@ from tkinter import Tk
 from tkinter.filedialog import askopenfilename,asksaveasfilename
 from typing import Union, ByteString
 
-encryptionKey=None
+encryption_key=None
 
-def configureSetting(setting, val):
+def configure_setting(setting, val):
     from scripts.init import _CONFIG
     if _CONFIG is not None:
         _CONFIG[setting] = val
@@ -22,15 +22,15 @@ def configureSetting(setting, val):
             json.dump(js, f, indent=4)
             f.truncate()
 
-def getYN(prompt, default=None):
+def get_yn(prompt, default=None):
     """Prompt the user for a yes/no answer with an optional default value."""
-    from scripts.init import rPrint
+    from scripts.init import rprint
     if default is not None:
         default_indicator = 'y/N' if default.lower().startswith("n") else 'Y/n'
-        rPrint(f'{prompt} \[{default_indicator}]', "prompt", "skip-input")
+        rprint(f'{prompt} \[{default_indicator}]', "prompt", "skip-input")
         # prompt = f"{prompt} [{default_indicator}] => "
     else:
-        rPrint(f'{prompt} \[y/n]', "prompt", "skip-input")
+        rprint(f'{prompt} \[y/n]', "prompt", "skip-input")
         # prompt = f"{prompt} [y/n] => "
 
     while True:
@@ -43,60 +43,60 @@ def getYN(prompt, default=None):
         elif user_input in ['n', 'no']:
             return False
         else:
-            rPrint('Please enter \'y\' for yes, \'n\' for no, or press [Enter] for the default value.', "warn")
+            rprint('Please enter \'y\' for yes, \'n\' for no, or press [Enter] for the default value.', "warn")
 
-def getCredentials(skip=None):
+def get_credentials(skip=None):
     """
     Prompt the user for their steam credentials.
         If skip is set to None, the default value, collect & return `username, password, encrypted_status`.
         If skip is set to True, skip the password/encryption collection, return only `username`.
         If skip is set to False, skip the username collection, return only `password, encrypted_status`.
     """
-    def getName():
-        from scripts.init import rPrint
+    def get_name():
+        from scripts.init import rprint
         pattern = r'^[a-zA-Z0-9_]{2,32}$'
-        name = rPrint('Steam Username', "prompt")
+        name = rprint('Steam Username', "prompt")
         while not name or not re.match(pattern, name):
-            name = rPrint('Please enter a valid Steam Username', "prompt")
+            name = rprint('Please enter a valid Steam Username', "prompt")
         return name
-    def getPass(pass_=None):
-        from scripts.init import rPrint
+    def get_pass(pass_=None):
+        from scripts.init import rprint
         pattern = r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{6,}$'
         if pass_ is None:
-            pass_ = rPrint('Steam Password', "getpass")
+            pass_ = rprint('Steam Password', "getpass")
             while not re.search(pattern, pass_):
-                pass_ = rPrint('Please enter a valid Steam Password', "getpass")
+                pass_ = rprint('Please enter a valid Steam Password', "getpass")
 
-            confirm = rPrint('Re-enter Steam Password', "getpass")
+            confirm = rprint('Re-enter Steam Password', "getpass")
             while pass_ != confirm:
-                rPrint('Passwords do not match, please try again.', "warn")
-                pass_ = rPrint('Steam Password', "getpass")
-                confirm = rPrint('Re-enter Steam Password', "getpass")
+                rprint('Passwords do not match, please try again.', "warn")
+                pass_ = rprint('Steam Password', "getpass")
+                confirm = rprint('Re-enter Steam Password', "getpass")
 
-        if getYN("Encrypt password?", "y"):
-            if key_location := keySave():
+        if get_yn("Encrypt password?", "y"):
+            if key_location := key_save():
                 if generate_key(key_location):
                     key = read_key(key_location)
                     pass_ = encrypt_pass(pass_, key)
-                    rPrint('Password Encrypted.', "success")
+                    rprint('Password Encrypted.', "success")
                     return pass_, True
                 else:
-                    rPrint('Key generation failed, exiting.', "error")
+                    rprint('Key generation failed, exiting.', "error")
                     exit(1)
             else:
-                rPrint('Key save failed, exiting.', "error")
+                rprint('Key save failed, exiting.', "error")
                 exit(1)
-        elif getYN("Continue without encryption?", "n"):
-            rPrint('Password stored in plain text.', "warn")
+        elif get_yn("Continue without encryption?", "n"):
+            rprint('Password stored in plain text.', "warn")
             return pass_, False
         else:
-            return getPass(pass_)
+            return get_pass(pass_)
     if skip is None:
-        return getName(), getPass()
+        return get_name(), get_pass()
     elif skip:
-        return getName()
+        return get_name()
     else:
-        return getPass()
+        return get_pass()
 
 def generate_key(key_location: str) -> bool:
     """
@@ -142,7 +142,7 @@ def read_key(key_location: str) -> bytes:
     except Exception as e:
         raise Exception(f"Failed to read the key from {key_location}") from e
 
-def generate_salt(saltLen: int = 32) -> str:
+def generate_salt(salt_len: int = 32) -> str:
     """
     Make a salt of specific length using cryptographically secure random generator.
 
@@ -153,9 +153,9 @@ def generate_salt(saltLen: int = 32) -> str:
         A cryptographically secure random salt string.
     """
     import string, secrets
-    charChoice = string.ascii_letters + string.digits + string.punctuation
-    #charChoice = string.ascii_letters + string.digits
-    return ''.join(secrets.choice(charChoice) for _ in range(saltLen))
+    char_choice = string.ascii_letters + string.digits + string.punctuation
+    #char_choice = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(char_choice) for _ in range(salt_len))
 
 def encrypt_pass(password: str, key: Union[str, ByteString, bytes]) -> str:
     """
@@ -188,62 +188,70 @@ def decrypt_pass(salted_pass: str, key: Union[str, ByteString, bytes]) -> str:
     Returns:
         The original plaintext value, decrypted and with the salt removed.
     """
-    from scripts.init import rPrint
-    rPrint(f'Salted Pass: {salted_pass}', "log")
-    rPrint(f'Supplied Key: {key}', "log")
+    from scripts.init import rprint
+    rprint(f'Salted Pass: {salted_pass}', "log")
+    rprint(f'Supplied Key: {key}', "log")
     salt_len_end_index = salted_pass.find(':')
-    rPrint(f'Salt Len End Index: {salt_len_end_index}', "log")
+    rprint(f'Salt Len End Index: {salt_len_end_index}', "log")
     salt_len = int(salted_pass[:salt_len_end_index])
-    rPrint(f'Salt Len: {salt_len}', "log")
+    rprint(f'Salt Len: {salt_len}', "log")
     salt = salted_pass[salt_len_end_index+1:salt_len_end_index+1+salt_len]
-    rPrint(f'Salt: {salt}', "log")
+    rprint(f'Salt: {salt}', "log")
     encrypted_pass = salted_pass[salt_len_end_index+1+salt_len:]
-    rPrint(f'Encrypted Pass: {encrypted_pass}', "log")
+    rprint(f'Encrypted Pass: {encrypted_pass}', "log")
     if isinstance(key, str):
-        rPrint("Key is string", "log")
+        rprint("Key is string", "log")
         key = base64.urlsafe_b64decode(key.encode())
-        rPrint(f'Key: {key}', "log")
+        rprint(f'Key: {key}', "log")
     elif isinstance(key, ByteString):
-        rPrint("Key is ByteString", "log")
+        rprint("Key is ByteString", "log")
     decryptor = Fernet(key)
     decrypted_pass = decryptor.decrypt(encrypted_pass).decode('utf-8')[salt_len:]
-    rPrint('Decrypted Pass: ' + '*' * len(decrypted_pass), "log")
+    rprint('Decrypted Pass: ' + '*' * len(decrypted_pass), "log")
     return decrypted_pass
 
-def keySelection():
-    from scripts.init import rPrint
-    rPrint('Path to Steam Password encryption key', "prompt", "skip-input")
-    Tk().withdraw()
-    if encryptionKey := askopenfilename(
-        title="Select the Steam Password encryption key file",
-        filetypes=(
-            ("Key files", "*.key"),
-            ("All files", "*.*"),
-        ),
-    ):
-        rPrint(f"Selected key file: {encryptionKey}", "log")
-        configureSetting('encryptionKey', encryptionKey)
-        return encryptionKey
-    else:
-        rPrint('No encryption key selected!', "error")
-        return None
+def key_selection():
+    from scripts.init import rprint
+    pathmsg="Path to Steam Password encryption key"
+    if not sys.stdout.isatty():
+        rprint(pathmsg, "prompt", "skip-input")
+        Tk().withdraw()
+        if encryption_key := askopenfilename(
+            title="Select the Steam Password encryption key file",
+            filetypes=(
+                ("Key files", "*.key"),
+                ("All files", "*.*"),
+            ),
+        ):
+            rprint(f"Selected key file: {encryption_key}", "log")
+            configure_setting('encryptionKey', encryption_key)
+            return encryption_key
+    elif encryption_key := rprint(pathmsg, "prompt"):
+        configure_setting('encryptionKey', encryption_key)
+        return encryption_key
+    rprint('No encryption key file location provided!', "error")
+    return None
 
-def keySave():
-    from scripts.init import rPrint
-    rPrint('Save path for Steam Password encryption key', "prompt", "skip-input")
-    Tk().withdraw()
-    if encryption_key_file := asksaveasfilename(
-        title="Choose a location to save the encryption key",
-        filetypes=(("Key files", "*.key"), ("All files", "*.*")),
-        defaultextension=".key",
-    ):
-        configureSetting('encrypted', 'true')
+def key_save():
+    from scripts.init import rprint
+    svmsg="Save path for Steam Password encryption key"
+    if not sys.stdout.isatty():
+        rprint(svmsg, "prompt", "skip-input")
+        Tk().withdraw()
+        if encryption_key_file := asksaveasfilename(
+            title="Choose a location to save the encryption key",
+            filetypes=(("Key files", "*.key"), ("All files", "*.*")),
+            defaultextension=".key",
+        ):
+            configure_setting('encrypted', 'true')
+            return encryption_key_file
+    elif encryption_key_file := rprint(svmsg, "prompt"):
+        configure_setting('encrypted', 'true')
         return encryption_key_file
-    else:
-        rPrint('No encryption key file location provided!', "error")
-        return None
+    rprint('No encryption key file location provided!', "error")
+    return None
 
-def fetchConfiguration(val=None):
+def fetch_configuration(val=None):
     from scripts.init import _CONFIG
     if _CONFIG is not None:
         return _CONFIG if val is None else str(_CONFIG[val])

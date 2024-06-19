@@ -10,10 +10,11 @@ import sys
 from pathlib import Path
 
 # Change following to fork's repo name/owner:
-Repo_Owner = "Kuuchuu"
-Repo_Name = "SteamModDownloader"
+repo_owner = "Kuuchuu"
+repo_name = "SteamModDownloader"
 
 # To-Do:
+# - IMPORTANT: Fix TTY detection! Currently does not display TK windows if running in terminal, regardless if GUI is available
 # - If conf supplied via arg, require saveConf flag for passed conf to be written to conf.json, otherwise conf is not saved after session.
 # - Add checksum verification for smd.py download
 # - Fix function & variable names (snake_case instead of camelCase). Bad habit, mbad
@@ -24,6 +25,9 @@ Repo_Name = "SteamModDownloader"
 # - Fix Rich Live output for SteamCMD process
 # - Docstring all functions
 # - standardize conf boolean cases ("anonymousMode": "false", "encrypted": "False")
+# - Trim extra decimal places off mod DL finish time
+# - Remove duplicates from mod dl list
+# - Modify Changelog display to render commit data in table properly if markdown table data is retrieved
 # /To-Do
 
 def install(args):
@@ -49,7 +53,7 @@ def install(args):
     input("[WARN] This action will download SMD in your local directory.\n[PROMPT] (Press CTRL+C to quit, or ENTER to continue) ")
 
     # Clone SMD to current directory
-    os.system(f"git clone https://github.com/{Repo_Owner}/{Repo_Name}.git")
+    os.system(f"git clone https://github.com/{repo_owner}/{repo_name}.git")
 
     # Move files to current directory and dispose of cloned folder
     move_and_clean()
@@ -101,7 +105,7 @@ def reinstall(args):
     clear_directory('.')
 
     # Clone SMD to current directory
-    os.system(f"git clone https://github.com/{Repo_Owner}/{Repo_Name}.git")
+    os.system(f"git clone https://github.com/{repo_owner}/{repo_name}.git")
     
     # Make venv(due to recent python changes)
     os.system("python3 -m venv .clientEnv")
@@ -128,7 +132,7 @@ def update(args):
         None
     """
     # Create temporary folder for update
-    os.system(f"git clone https://github.com/{Repo_Owner}/{Repo_Name}.git update/")
+    os.system(f"git clone https://github.com/{repo_owner}/{repo_name}.git update/")
 
     # Remove and update scripts, smd, and version.txt
     update_items = ["scripts", "smd.py", "requirements.txt", "version.txt"]
@@ -165,14 +169,14 @@ def launch(args):
     print("[PROCESS] Starting SMD.")
     from scripts.init import start
     args_dict = {k: v for k, v in vars(args).items() if v is not None}
-    # print(f'smd.py | Repo Owner: {Repo_Owner}')
-    # print(f'smd.py | Repo Name: {Repo_Name}')
+    # print(f'smd.py | Repo Owner: {repo_owner}')
+    # print(f'smd.py | Repo Name: {repo_name}')
     # print(f'smd.py | Options: {args_dict}')
     if args_dict.get('silent'):
         with contextlib.redirect_stdout(io.StringIO()):
-            start(Repo_Owner, Repo_Name, options=args_dict)
+            start(repo_owner, repo_name, options=args_dict)
     else:
-        start(Repo_Owner, Repo_Name, options=args_dict)
+        start(repo_owner, repo_name, options=args_dict)
 
 def move_and_clean():
     """
@@ -184,8 +188,8 @@ def move_and_clean():
     Returns:
         None
     """
-    for item in os.listdir(f'./{Repo_Name}'):
-        s_path = os.path.join(f'./{Repo_Name}', item)
+    for item in os.listdir(f'./{repo_name}'):
+        s_path = os.path.join(f'./{repo_name}', item)
         d_path = os.path.join('.', item)
         if os.path.isdir(s_path) and os.path.exists(d_path):
             shutil.rmtree(d_path)
@@ -198,7 +202,7 @@ def move_and_clean():
             os.remove(s_path)
         else:
             shutil.move(s_path, '.')
-    shutil.rmtree(f'./{Repo_Name}')
+    shutil.rmtree(f'./{repo_name}')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="SteamModDownloader - A Steam Workshop Downloader CLI-tool for linux")
