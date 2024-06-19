@@ -6,6 +6,7 @@ on:
       - dev
     paths:
       - 'version.txt'
+  workflow_dispatch:
 
 jobs:
   sync-branches:
