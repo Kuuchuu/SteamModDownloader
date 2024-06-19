@@ -52,7 +52,7 @@ Optional launch Flags:
 
     -m/--mod 'ID_NUMBER,https://steam.../?id=...,ID_NUMBER,https://steam.../?id=...'
 
-    -c/--collection 'ID_NUMBER,ID_NUMBER' OR 'https://steam.../?id=...,https://steam.../?id=...' # Mod/Collection URLs/IDs can be mix-matched
+    -C/--collection 'ID_NUMBER,ID_NUMBER' OR 'https://steam.../?id=...,https://steam.../?id=...' # Mod/Collection URLs/IDs can be mix-matched
 
     -o/--outputDir '/path/to/modDL/output'
 
@@ -72,9 +72,11 @@ Optional launch Flags:
 
     -v/--verbose # Extra chatty output.
 
-    -m/--minimal # Very basic output. Useful for non-interactive scripts.
+    -M/--minimal # Very basic output. Useful for non-interactive scripts.
 
-    -s/--silent # What's it doing? When will it finish? Who knows...
+    -s/--silent # What's it doing? When will it finish? Who knows... (Intended for non-interactive use)
+
+    -d/--debug # Run smd's development branch.
 
     -h/--help
 ```

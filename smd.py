@@ -1,21 +1,30 @@
 #!/usr/bin/env python3
 import argparse
+import contextlib
+import io
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 # Change following to fork's repo name/owner:
 Repo_Owner = "Kuuchuu"
 Repo_Name = "SteamModDownloader"
 
 # To-Do:
-# - Add support for password encryption
-# - Verbose & Silent modes
+# - Verbose mode - rPrint functionality, only print "log" messages if verbose mode is enabled
 # - If conf supplied via arg, require saveConf flag for passed conf to be written to conf.json, otherwise conf is not saved after session.
-# - Fancy output (Color INFO, WARN, ERROR)
+# - Add checksum verification for smd.py download
+# - Fix function & variable names (snake_case instead of camelCase). Bad habit, mbad
+# - Remove key location from conf.json, only allow passing through args
+# - Restructure code layout for packaging/distribution
+# - Fix whatever the heck I have going on with __main__.py (part of restructuring)
+# - Symlink SteamCMD files before each run
+# - Fix Rich Live output for SteamCMD process
+# - Docstring all functions
+# - standardize conf boolean cases ("anonymousMode": "false", "encrypted": "False")
 # /To-Do
 
 def install(args):
@@ -160,7 +169,11 @@ def launch(args):
     # print(f'smd.py | Repo Owner: {Repo_Owner}')
     # print(f'smd.py | Repo Name: {Repo_Name}')
     # print(f'smd.py | Options: {args_dict}')
-    start(Repo_Owner, Repo_Name, options=args_dict)
+    if args_dict.get('silent'):
+        with contextlib.redirect_stdout(io.StringIO()):
+            start(Repo_Owner, Repo_Name, options=args_dict)
+    else:
+        start(Repo_Owner, Repo_Name, options=args_dict)
 
 def move_and_clean():
     """
@@ -215,7 +228,7 @@ if __name__ == '__main__':
                         help='Game\'s Steam ID. Example: 294100')
     launch_parser.add_argument('-m', '--mod', type=str,
                         help='ID_NUMBER,ID_NUMBER or URLs. Example: \'ID_NUMBER,ID_NUMBER\' OR \'https://steam.../?id=...,https://steam.../?id=...\'')
-    launch_parser.add_argument('-c', '--collection', type=str,
+    launch_parser.add_argument('-C', '--collection', type=str,
                         help='ID_NUMBER,ID_NUMBER or URLs. Example: \'ID_NUMBER,ID_NUMBER\' OR \'https://steam.../?id=...,https://steam.../?id=...\'')
     launch_parser.add_argument('-o', '--outputDir', type=str,
                         help='Path to the mod download output directory. Example: \'/path/to/modDL/output\'')
@@ -228,17 +241,19 @@ if __name__ == '__main__':
     launch_parser.add_argument('-e', '--encrypted', action='store_true',
                         help='Is password encrypted? Set this to have SMD prompt for the key file during operation.')
     launch_parser.add_argument('-k', '--encryptionKey', type=str,
-                        help='Path to the password\'s key file. Example: \'/path/to/smd.key\''').
+                        help='Path to the password\'s key file. Example: \'/path/to/smd.key\'')
     launch_parser.add_argument('-n', '--encryptPassword', type=str,
-                        help='Call `smd.py launch` with the -n/--encryptPassword flag followed by a plain text password. Prompts for key file save location and returns encrypted password.').
+                        help='Call `smd.py launch` with the -n/--encryptPassword flag followed by a plain text password. Prompts for key file save location and returns encrypted password.')
     launch_parser.add_argument('-l', '--list', action='store_true',
                         help='List all currently downloaded mods.')
     launch_parser.add_argument('-v', '--verbose', action='store_true',
                         help='Extra chatty output.')
-    launch_parser.add_argument('-m', '--minimal', action='store_true',
+    launch_parser.add_argument('-M', '--minimal', action='store_true',
                         help='Very basic output. Useful for non-interactive scripts.')
     launch_parser.add_argument('-s', '--silent', action='store_true',
                         help='What\'s it doing? When will it finish? Who knows...')
+    launch_parser.add_argument('-d', '--debug', action='store_true',
+                        help='Run smd\'s development branch.')
     args = parser.parse_args()
     
     if hasattr(args, 'func'):

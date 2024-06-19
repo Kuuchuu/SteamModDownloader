@@ -1,4 +1,6 @@
 import scripts.config as conf
+#from scripts.init import rPrint
+from rich.console import Console; console = Console()
 import os
 from re import sub
 import wget
@@ -15,18 +17,21 @@ tarFile=None
 encryptionKey=None
 
 def anonCheck():
+    global encryptionKey
     if conf.fetchConfiguration("anonymousMode").lower() != "false":
         return "anonymous"
     steamPassword = conf.fetchConfiguration("steamPassword")
     if str(conf.fetchConfiguration("encrypted")).lower() != "false":
         if encryptionKey is None:
             if encryptionKey := conf.fetchConfiguration("encryptionKey") or conf.keySelection():
-                steamPassword = conf.decryptPassword(steamPassword, encryptionKey)
+                key = conf.read_key(encryptionKey)
+                steamPassword = conf.decrypt_pass(steamPassword, key)
             else:
                 print("No encryption key selected.\nAttempting anonymous login...")
                 return "anonymous"
         else:
-            steamPassword = conf.decryptPassword(steamPassword, encryptionKey)
+            key = conf.read_key(encryptionKey)
+            steamPassword = conf.decrypt_pass(steamPassword, key)
     return f'{conf.fetchConfiguration("steamAccountName")}  {steamPassword}'
 
 def checkAndDownloadSteamCmd():
@@ -63,7 +68,8 @@ def downloadModListSCMD(gameid, mods, insDir):
     print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
     print('Running SteamCMD against Mod List...')
     startTime = time.time()
-    subprocess.run([f'{steamCmdPath}steamcmd.sh', f'+runscript {dlScriptPath}'])
+    with console.status('[bold cyan]Running SteamCMD against Mod List...[/bold cyan]'): #spinner
+        subprocess.run([f'{steamCmdPath}steamcmd.sh', f'+runscript {dlScriptPath}'])
     print(f'Downloads finished in {time.time()-startTime} seconds.')
     os.remove(dlScriptPath)
     print('\n--------------------------------------------------')
