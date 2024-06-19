@@ -151,9 +151,14 @@ def checkConfig():
 
     # Reconfigure download directory setting if invalid
     if not os.path.exists(conf.fetchConfiguration('downloadDir')):
-        Tk().withdraw()
-        rPrint('Non-existent mod download directory, please enter a new one', "prompt", "skip-input")
-        prompt = askdirectory(); print('')
+        dlmsg="Non-existent mod download directory, please enter a new one"
+        prompt=None
+        if sys.stdout.isatty():
+            prompt = rPrint(dlmsg, "prompt")
+        else:
+            rPrint(dlmsg, "prompt", "skip-input")
+            Tk().withdraw()
+            prompt = askdirectory(); print('')
         conf.configureSetting('downloadDir', prompt)
 
     # Reconfigure gameID if empty
@@ -250,9 +255,13 @@ def configure(prompt=None):
     # if prompt not in [4, 5]:
     #     console.print('What value do you want to change it to?')
     if prompt == '2':
-        Tk().withdraw()
-        rPrint('What directory would you like to change it to?', "prompt", "skip-input")
-        value = askdirectory()
+        dldirmsg="What directory would you like to change it to?"
+        if not sys.stdout.isatty():
+            Tk().withdraw()
+            rPrint(dldirmsg, "prompt", "skip-input")
+            value = askdirectory()
+        else:
+            value = rPrint(dldirmsg, "prompt")
     elif prompt == '4':
         value = conf.getCredentials(True)
     elif prompt == '5':
