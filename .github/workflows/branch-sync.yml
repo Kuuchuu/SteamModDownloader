@@ -26,7 +26,7 @@ jobs:
       run: |
         git fetch origin
         git checkout stable
-        git merge origin/dev --ff-only
+        git merge origin/dev --no-ff
         git rm .github/workflows/branch-sync.yml
         sed -i '/# To-Do:/,/# \/To-Do/d' smd.py
         git commit -am "Version $(cat version.txt)"
@@ -36,8 +36,7 @@ jobs:
       run: |
         git fetch origin
         git checkout NBZion
-        git merge origin/dev --ff-only
-
+        git merge origin/dev --no-ff
         git rm .github/workflows/branch-sync.yml
         sed -i 's/Kuuchuu/NBZion/g' smd.py
         sed -i '/# To-Do:/,/# \/To-Do/d' smd.py
