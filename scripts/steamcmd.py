@@ -1,4 +1,6 @@
 import scripts.config as conf
+#from scripts.init import rPrint
+from rich.console import Console; console = Console()
 import os
 from re import sub
 import wget
@@ -7,18 +9,30 @@ import shutil
 import json
 import time
 
-# Variables
 steamCmdUrl="https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz"
 steamCmdPath="./scripts/steamcmd/"
 workDirectory = f'{os.getcwd()}/scripts/steamcmd/workshop'
 conDir = f'{workDirectory}/steamapps/workshop/content/'
 tarFile=None
+encryptionKey=None
 
 def anonCheck():
-    if conf.fetchConfiguration("anonymousMode") == "false":
-        return conf.fetchConfiguration("steamAccountName") + " " + conf.fetchConfiguration("steamPassword")
-    else:
+    global encryptionKey
+    if conf.fetchConfiguration("anonymousMode").lower() != "false":
         return "anonymous"
+    steamPassword = conf.fetchConfiguration("steamPassword")
+    if str(conf.fetchConfiguration("encrypted")).lower() != "false":
+        if encryptionKey is None:
+            if encryptionKey := conf.fetchConfiguration("encryptionKey") or conf.keySelection():
+                key = conf.read_key(encryptionKey)
+                steamPassword = conf.decrypt_pass(steamPassword, key)
+            else:
+                print("No encryption key selected.\nAttempting anonymous login...")
+                return "anonymous"
+        else:
+            key = conf.read_key(encryptionKey)
+            steamPassword = conf.decrypt_pass(steamPassword, key)
+    return f'{conf.fetchConfiguration("steamAccountName")}  {steamPassword}'
 
 def checkAndDownloadSteamCmd():
     if not os.path.exists(steamCmdPath):
@@ -39,39 +53,10 @@ def checkAndDownloadSteamCmd():
     os.remove(f'{steamCmdPath}steamcmd_linux.tar.gz')
     os.mkdir('./scripts/steamcmd/workshop')
 
-def download(id,gameId,name,insDir):
-    print(f'Downloading {name}(MODID: {id} GAMEID: {gameId})')
-    print('--------------------------------------------------')
-    subprocess.run(
-        [
-            f'{steamCmdPath}steamcmd.sh',
-            f'+force_install_dir {workDirectory}',
-            f'+login {anonCheck()}',
-            f'+workshop_download_item {gameId} {id}',
-            '+quit',
-        ]
-    )
-    print('\n--------------------------------------------------')
-    print(f'Moving and Renaming {name} ({id})')
-    modFol=conDir+gameId+f'/{id}/'
-    outPathName = f'{insDir}/{name}'
-    if os.path.exists(outPathName): print('Updating Existing Mod')
-    # Prepare info.json for mod
-    with open(os.path.join(modFol,'smbinfo.json'), 'w') as jsonFile:
-        infoData= {
-            "name": name,
-            "gameID": gameId
-        }
-        json.dump(infoData,jsonFile,indent=4)
-    shutil.copytree(modFol,outPathName,dirs_exist_ok=True)
-    shutil.rmtree(modFol)
-    print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-    print('Mod Download Complete!')
-
 def downloadModListSCMD(gameid, mods, insDir):
-    print('--------------------------------------------------')
-    print('Downloading Mods...')
-    print(f'DEBUG: {mods}')
+    #print('--------------------------------------------------')
+    #print('Downloading Mods...')
+    # print(f'DEBUG: {mods}')
     with open('download_script.txt', 'w') as scriptFile:
         scriptFile.write(f'force_install_dir {workDirectory}\n')
         scriptFile.write(f'login {anonCheck()}\n')
@@ -83,7 +68,8 @@ def downloadModListSCMD(gameid, mods, insDir):
     print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
     print('Running SteamCMD against Mod List...')
     startTime = time.time()
-    subprocess.run([f'{steamCmdPath}steamcmd.sh', f'+runscript {dlScriptPath}'])
+    with console.status('[bold cyan]Running SteamCMD against Mod List...[/bold cyan]'): #spinner
+        subprocess.run([f'{steamCmdPath}steamcmd.sh', f'+runscript {dlScriptPath}'])
     print(f'Downloads finished in {time.time()-startTime} seconds.')
     os.remove(dlScriptPath)
     print('\n--------------------------------------------------')
